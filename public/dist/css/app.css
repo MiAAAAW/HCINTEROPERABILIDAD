@@ -1,0 +1,89 @@
+* {
+    padding: 0%;
+    margin: 0%;
+    box-sizing: border-box;
+    font-family: "Rubik", sans-serif;
+
+}
+body, html {
+    overflow-x: hidden; /* Deshabilita el scroll horizontal */
+}
+
+:root {
+    --color-white: #FFFFFF;
+    --color-gray: #D5C8D0;
+    --color-blue: #20527C;
+    --color-purple: #852A6E;
+    --color-purple2: #812A68;
+
+    --font-title2: "Jost", sans-serif;
+    --font-text: "Rubik", sans-serif;
+    --font-title: "Roboto Condensed", sans-serif;
+
+}
+
+h1,
+h2,
+h3,
+h4,
+h5{
+    font-family: var(--font-title2);
+
+}
+.font-cursive{
+    font-style: italic;
+}
+.font-justify{
+    text-align: justify;
+}
+.font-title{
+    font-family: "Roboto Condensed", sans-serif;
+}
+.font-title2{
+    font-family: "Jost", sans-serif;
+}
+.font-text{
+    font-family: "Rubik", sans-serif;
+}
+
+.color-white {
+    color: #FFFFFF;
+}
+
+.color-gray {
+    color: #D5C8D0;
+}
+
+.color-blue {
+    color: #20527C;
+}
+
+.color-purple {
+    color: #852A6E;
+}
+
+.color-purple2 {
+    color: #812A68;
+}
+
+.bg-white {
+    background-color: #FFFFFF;
+}
+
+.bg-gray {
+    background-color: #D5C8D0;
+}
+
+.bg-blue {
+    background-color: #20527C;
+}
+
+.bg-purple {
+    background-color: #852A6E;
+}
+
+.bg-purple2 {
+    background-color: #812A68;
+}
+
+

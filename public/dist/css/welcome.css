@@ -1,0 +1,541 @@
+@import url('app.css');
+
+.section-navbar {
+    position: sticky;
+    z-index: 1000;
+}
+
+.logo-navbar {
+    position: absolute;
+    top: 1rem;
+    width: 3rem;
+}
+.icon-navbar{
+    font-size: 1.7rem;
+    font-weight: bold;
+}
+
+.section-navbar a {
+    font-family: var(--font-title2);
+}
+
+.section-main-box {
+    height: calc(100vh - 72px);
+    background-image: url('../../assets/imgs/Ilave.png');
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+.section-main-box::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(63, 71, 143, 0.464);
+    z-index: 0;
+    animation: pintar 2s forwards;
+}
+
+@keyframes pintar {
+  0% {
+    height: 0;
+  }
+  100% {
+    height: 100vh;
+  }
+}
+
+
+.main-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.main-box-div-1 {
+    height: calc(100vh - 72px);
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.main-box-div-1 h1 {
+    font-family: var(--font-title);
+    color: var(--color-white);
+    font-size: 3rem;
+    font-weight: bold;
+    margin: 0;
+}
+.main-box-text{
+    position: relative;
+    z-index: 3;
+}
+
+.main-box-text img{
+    padding: 1.8rem 0;
+}
+
+.main-box-div-1 p {
+    color: var(--color-white);
+    font-size: .9rem;
+    padding: .2rem 2.5rem;
+    margin: 0;
+}
+
+.main-box-btns{
+    padding: .5rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.main-box-btns span {
+    margin: 1.5rem 0;
+}
+.main-box-btns a {
+    text-decoration: none;
+    padding: .8rem 2.5rem;
+}
+
+.main-btns-1 {
+    border-radius: 5px;
+    border: 1px solid var(--color-blue);
+    flex-direction: column;
+    color: var(--color-white);
+    background-color: var(--color-blue);
+    box-shadow: 10px 10px 5px -7px rgba(0,0,0,0.75);
+    -webkit-box-shadow: 10px 10px 5px -7px rgba(0,0,0,0.75);
+    -moz-box-shadow: 10px 10px 5px -7px rgba(0,0,0,0.75);
+}
+
+.main-btns-1:hover {
+    border-radius: 5px;
+    border: 1px solid var(--color-white);
+    flex-direction: column;
+    background-color: var(--color-white);
+    color: var(--color-purple2);
+}
+
+/* section logos */
+
+.firts-slider-logos {
+    padding: 1rem;
+    /* display: flex; */
+}
+
+.first-slider-text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--color-purple2);
+}
+
+.first-slider-text h2 {
+    font-size: 1rem;
+}
+
+.swiper {
+    width: 100%;
+    height: 100%;
+}
+
+.swiper-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.swiper-slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.swiper-slide img {
+    width: 100px;
+    object-fit: cover;
+}
+
+
+/* section-info-med */
+
+.info-container-3-text h2 {
+    font-family: var(--font-title2);
+    align-items: center;
+    padding: 2rem .5rem;
+    /* font-size: 2rem; */
+}
+
+.info-container-3-text p {
+    padding: 0 1rem;
+    text-align: justify;
+}
+
+.four-box-btn {
+    text-decoration: none;
+    padding: 1rem 1.5rem;
+}
+
+
+/* section menciones */
+.four-box-figure-1 {
+    height: 36rem;
+    padding: 1.5rem 2.5rem;
+}
+
+.four-box-figure-1 div {
+    background-image: url('../../assets/imgs/igm1.png');
+    background-position: center;
+    background-size: cover;
+}
+
+.four-container-boxs {
+    display: flex;
+    flex-direction: column;
+    padding: 0 2.7rem;
+}
+
+.four-box {
+    /* border: 1px solid black; */
+    border-radius: .7rem;
+    margin: 1rem 0 0 0;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+
+}
+
+.four-box div {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.2rem;
+}
+
+.four-box a {
+    text-decoration: none;
+}
+
+.four-box-info-1 {
+    background-color: var(--color-purple2);
+}
+
+.four-box-info-1 a {
+    color: var(--color-white);
+}
+
+.four-box-info-2 {
+    background-color: var(--color-blue);
+}
+
+.four-box-info-2 a {
+    color: var(--color-white);
+    /* font-weight: bold; */
+}
+
+.four-box div :nth-child(1) {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.four-box-figure-2 {
+    height: 28rem;
+    padding: 1.5rem 2.5rem;
+}
+
+.four-box-figure-2 div {
+    height: 100%;
+    background-image: url('../../assets/imgs/doc2.jpg');
+    background-position: center;
+    background-size: cover;
+}
+
+
+.four-box-main-info {
+    padding: 0 2.5rem;
+}
+
+.four-box-main-info {
+    /* padding: 1rem; */
+}
+
+.card-mension {
+    height: 20rem;
+}
+
+.card-mension h5 {
+    text-align: center;
+    color: var(--color-purple2);
+    padding: 1rem 0;
+}
+
+.card-mension p {
+    text-align: justify;
+    padding: 0 1.0rem;
+}
+
+.card-mension a {
+    padding: 1rem;
+}
+
+/* section contact */
+
+.section-contact {
+    border: none;
+    padding: 4rem 0;
+    background-color: #212529;
+    background-image: linear-gradient(to bottom, white 60%, #212529 40%);
+}
+
+.container-box-contant {
+    background-color: var(--color-blue);
+    border-radius: 5px;
+}
+
+.s-box-contanct h2 {
+    text-align: center;
+    color: var(--color-white);
+    padding: 2rem 0;
+}
+
+.s-form-contact {
+    display: flex;
+    justify-content: space-around;
+    background-color: var(--color-white);
+    border-radius: 5px;
+    padding: .5rem .5rem;
+}
+
+.s-form-contact input {
+    border: none;
+}
+
+.s-box-text-contanct {
+    padding: 2rem 1.5rem;
+    color: var(--color-white);
+}
+
+
+.ag-format-container {
+    margin: 0 auto;
+}
+
+
+.ag-courses_box {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: start;
+    -ms-flex-align: start;
+    align-items: flex-start;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    padding: 50px 0;
+}
+
+.ag-courses_item {
+    -ms-flex-preferred-size: calc(33.33333% - 30px);
+    flex-basis: calc(33.33333% - 30px);
+    margin: 0 15px 30px;
+    overflow: hidden;
+    border-radius: 28px;
+}
+
+.ag-courses-item_link {
+    display: block;
+    padding: 30px 20px;
+    /*background-color: var(--color-blue);*/
+    /*background-color: #121212;*/
+    overflow: hidden;
+    position: relative;
+    text-decoration: none;
+    height: 14rem;
+    /* From https://css.glass */
+    /*background: rgba(255, 255, 255, 0.33);*/
+    /*border-radius: 16px;*/
+    /*box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);*/
+    /*backdrop-filter: blur(6.8px);*/
+    /*-webkit-backdrop-filter: blur(6.8px);*/
+    /*border: 1px solid rgba(255, 255, 255, 0.25);*/
+
+    /* From https://css.glass */
+    background: rgba(255, 255, 255, 0.21);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(11.8px);
+    -webkit-backdrop-filter: blur(11.8px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+
+}
+
+.ag-courses-item_link:hover,
+.ag-courses-item_link:hover .ag-courses-item_date {
+    text-decoration: none;
+}
+
+.ag-courses-item_link:hover .ag-courses-item_bg {
+    -webkit-transform: scale(10);
+    -ms-transform: scale(10);
+    transform: scale(10);
+}
+
+.ag-courses-item_title {
+    min-height: 87px;
+    margin: 0 0 25px;
+
+    overflow: hidden;
+
+    font-weight: bold;
+    font-size: 1.5rem;
+    color: var(--color-white);
+
+    z-index: 2;
+    position: relative;
+}
+
+.ag-courses-item_date-box {
+    font-size: 18px;
+    color: #000;
+    /*color: var(--color-blue);*/
+    font-weight: bold;
+    z-index: 2;
+    position: relative;
+}
+
+.ag-courses-item_date {
+    font-weight: bold;
+    color: #000;
+    /*color: var(--color-blue);*/
+    -webkit-transition: color .5s ease;
+    -o-transition: color .5s ease;
+    transition: color .5s ease
+}
+
+.ag-courses-item_bg {
+    height: 128px;
+    width: 128px;
+    /*background-color: #f9b234;*/
+    background-color: #f9b234;
+    z-index: 1;
+    position: absolute;
+    top: -75px;
+    right: -75px;
+
+    border-radius: 50%;
+
+    -webkit-transition: all .5s ease;
+    -o-transition: all .5s ease;
+    transition: all .5s ease;
+}
+
+.ag-courses_item:nth-child(2n) .ag-courses-item_bg {
+    background-color: #3ecd5e;
+}
+
+.ag-courses_item:nth-child(3n) .ag-courses-item_bg {
+    background-color: #e44002;
+}
+
+.ag-courses_item:nth-child(4n) .ag-courses-item_bg {
+    background-color: #952aff;
+}
+
+.ag-courses_item:nth-child(5n) .ag-courses-item_bg {
+    background-color: #cd3e94;
+}
+
+.ag-courses_item:nth-child(6n) .ag-courses-item_bg {
+    background-color: #4c49ea;
+}
+
+
+
+@media only screen and (max-width: 979px) {
+    .ag-courses_item {
+        -ms-flex-preferred-size: calc(50% - 30px);
+        flex-basis: calc(50% - 30px);
+    }
+
+    .ag-courses-item_title {
+        font-size: 24px;
+    }
+}
+
+@media only screen and (max-width: 767px) {
+    .ag-format-container {
+        width: 96%;
+    }
+
+}
+
+@media only screen and (max-width: 639px) {
+    .ag-courses_item {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+    }
+
+    .ag-courses-item_title {
+        min-height: 72px;
+        line-height: 1;
+
+        font-size: 24px;
+    }
+
+    .ag-courses-item_link {
+        padding: 22px 40px;
+    }
+
+    .ag-courses-item_date-box {
+        font-size: 16px;
+    }
+}
+
+
+.section-video{
+    /* width: 100%; */
+    height: 20rem;
+    /* width: ;: 30rem; */
+    background-image: url('../../assets/imgs/bg7.gif');
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+/*.bg-news{*/
+/*    background: -webkit-linear-gradient(211deg, #812a68,#d5c8d0,#20527c);!* Chrome 10-25, Safari 5.1-6 *!*/
+/*    background: linear-gradient(211deg, #812a68,#d5c8d0,#20527c);!* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ *!*/
+/*}*/
+
+.bg-news{
+    background: -webkit-linear-gradient(344deg, #812a68,#20527c);/* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(344deg, #812a68,#20527c);/* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+
+/* Estilo específico para el Swiper de la galería */
+.gallerySwiper .swiper-slide {
+    padding: 0; /* Elimina el padding entre los slides */
+}
+
+.gallerySwiper img.flayer-img {
+    width: 98%; /* Asegura que las imágenes ocupen el ancho completo del slide */
+    height: 32rem; /* Ajusta la altura de las imágenes según lo necesites */
+    object-fit: fill; /* Hace que las imágenes mantengan su proporción sin deformarse */
+    border-radius: 8px; /* Añadir bordes redondeados, opcional */
+}
+
+/* Personalizar los botones de navegación */
+.gallerySwiper .swiper-button-next,
+.gallerySwiper .swiper-button-prev {
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo semi-transparente */
+    border-radius: 50%; /* Redondear los botones */
+    width: 40px; /* Ajusta el tamaño de los botones */
+    height: 40px;
+}
+
+
+
