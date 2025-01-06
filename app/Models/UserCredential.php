@@ -11,13 +11,16 @@ class UserCredential extends Model
 
     protected $fillable = ['user_id', 'dni', 'ruc', 'password', 'last_updated_at'];
 
-    // Relación con la tabla users
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // Encriptar automáticamente la contraseña al guardarla
+    public function isPasswordExpired()
+    {
+        return now()->diffInDays($this->last_updated_at) >= 15;
+    }
+
     public function setPasswordAttribute($value)
     {
         $this->attributes['password'] = bcrypt($value);

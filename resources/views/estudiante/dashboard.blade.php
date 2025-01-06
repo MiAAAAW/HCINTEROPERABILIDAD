@@ -39,22 +39,18 @@
             <h3 class="card-title">Gestionar Credenciales</h3>
           </div>
           <div class="card-body">
-            <form action="{{ route('estudiante.credenciales.guardar') }}" method="POST">
+            <form action="{{ route('estudiante.credencial.configurar') }}" method="POST">
               @csrf
               <div class="form-group">
-                <label for="dni">DNI</label>
-                <input type="text" name="dni" id="dni" class="form-control" value="{{ $credentials->dni ?? '' }}" required>
+                  <label for="credencial_actual">Credencial Actual</label>
+                  <input type="password" name="credencial_actual" id="credencial_actual" class="form-control" placeholder="Ingrese su credencial inicial" required>
               </div>
               <div class="form-group">
-                <label for="ruc">RUC</label>
-                <input type="text" name="ruc" id="ruc" class="form-control" value="{{ $credentials->ruc ?? '' }}" required>
+                  <label for="nueva_credencial">Nueva Credencial</label>
+                  <input type="password" name="nueva_credencial" id="nueva_credencial" class="form-control" placeholder="Ingrese su nueva credencial" minlength="8" required>
               </div>
-              <div class="form-group">
-                <label for="password">Contraseña</label>
-                <input type="password" name="password" id="password" class="form-control" required>
-              </div>
-              <button type="submit" class="btn btn-primary" style="width: 100%;">Guardar Credenciales</button>
-            </form>
+              <button type="submit" class="btn btn-primary mt-2" style="width: 100%;">Actualizar Credencial</button>
+          </form>
           </div>
         </div>
 

@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
 use App\Models\UserCredential;
+use App\Services\ReniecService;
 
 class DashboardController extends Controller
 {
@@ -14,77 +14,83 @@ class DashboardController extends Controller
         $data['header_title'] = 'Dashboard';
 
         if (Auth::user()->user_type == 1) {
-            return view('admin.dashboard', $data);
+            return view('admin.dashboard', $data); // Redirigir al dashboard del administrador
         } elseif (Auth::user()->user_type == 2) {
-            return view('docente.dashboard', $data);
+            return view('docente.dashboard', $data); // Redirigir al dashboard del docente
         } elseif (Auth::user()->user_type == 3) {
-            // Obtener las credenciales del estudiante (si existen)
+            // Obtener credenciales del estudiante
             $credentials = UserCredential::where('user_id', Auth::id())->first();
             $data['credentials'] = $credentials;
 
-            return view('estudiante.dashboard', $data);
+            return view('estudiante.dashboard', $data); // Redirigir al dashboard del estudiante
+        }
+
+        abort(403, 'No tiene acceso a esta sección.'); // Manejar accesos no autorizados
+    }
+
+    public function configurarCredenciales(Request $request, ReniecService $reniecService)
+    {
+        $validated = $request->validate([
+            'credencial_actual' => 'required|string',
+            'nueva_credencial' => 'required|string|min:8',
+        ]);
+    
+        $credentials = UserCredential::where('user_id', auth()->id())->firstOrFail();
+    
+        try {
+            // Llamar al servicio REST para actualizar la credencial
+            $reniecService->actualizarCredencial(
+                $credentials,
+                $validated['credencial_actual'],
+                $validated['nueva_credencial']
+            );
+    
+            // Guardar la nueva credencial en la base de datos
+            $credentials->update([
+                'password' => bcrypt($validated['nueva_credencial']),
+                'last_updated_at' => now(),
+            ]);
+    
+            return back()->with('success', 'Credencial inicial actualizada correctamente.');
+        } catch (\Exception $e) {
+            return back()->withErrors(['msg' => 'Error al actualizar credencial: ' . $e->getMessage()]);
         }
     }
 
-    // Guarda o actualiza las credenciales del usuario
-    public function storeCredentials(Request $request)
+    public function renovarCredencialManual(Request $request, ReniecService $reniecService)
     {
-        $validated = $request->validate([
-            'dni' => 'required|string|size:8',
-            'ruc' => 'required|string',
-            'password' => 'required|string',
-        ]);
+        $credentials = UserCredential::where('user_id', auth()->id())->firstOrFail();
 
-        UserCredential::updateOrCreate(
-            ['user_id' => Auth::id()],
-            [
-                'dni' => $validated['dni'],
-                'ruc' => $validated['ruc'],
-                'password' => bcrypt($validated['password']), // Encriptar la contraseña
+        $nuevaCredencial = 'Clave' . rand(1000, 9999);
+
+        try {
+            $reniecService->actualizarCredencial($credentials, $credentials->password, $nuevaCredencial);
+
+            $credentials->update([
+                'password' => bcrypt($nuevaCredencial),
                 'last_updated_at' => now(),
-            ]
-        );
+            ]);
 
-        return back()->with('success', 'Credenciales guardadas correctamente.');
+            return back()->with('success', 'Credencial renovada manualmente.');
+        } catch (\Exception $e) {
+            return back()->withErrors(['msg' => $e->getMessage()]);
+        }
     }
 
-    // Procesa la consulta de DNI usando el servicio de RENIEC
-    public function processConsultaDni(Request $request)
+    public function processConsultaDni(Request $request, ReniecService $reniecService)
     {
         $validated = $request->validate([
             'dni_consulta' => 'required|string|size:8',
         ]);
 
-        // Obtener credenciales del usuario actual
-        $credentials = UserCredential::where('user_id', Auth::id())->first();
-
-        if (!$credentials) {
-            return back()->withErrors(['msg' => 'Primero debe guardar sus credenciales.']);
-        }
-
-        $url = 'https://ws2.pide.gob.pe/Rest/RENIEC/Consultar?out=json';
-        $payload = [
-            'PIDE' => [
-                'nuDniConsulta' => $validated['dni_consulta'],
-                'nuDniUsuario' => $credentials->dni,
-                'nuRucUsuario' => $credentials->ruc,
-                'password' => $credentials->password,
-            ],
-        ];
+        $credentials = UserCredential::where('user_id', auth()->id())->firstOrFail();
 
         try {
-            $response = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8'])
-                ->post($url, $payload);
-
-            if ($response->successful()) {
-                return redirect()
-                    ->route('estudiante.dashboard')
-                    ->with('data', $response->json());
-            }
-
-            return back()->withErrors(['msg' => 'Error en la consulta: ' . $response->status()]);
+            $data = $reniecService->consultarDni($validated['dni_consulta'], $credentials);
+            return back()->with('data', $data);
         } catch (\Exception $e) {
-            return back()->withErrors(['msg' => 'Error: ' . $e->getMessage()]);
+            return back()->withErrors(['msg' => $e->getMessage()]);
         }
     }
 }
+

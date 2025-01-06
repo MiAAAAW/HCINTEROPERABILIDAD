@@ -19,8 +19,8 @@ class AuthController extends Controller
             switch (Auth::user()->user_type)
             {
                 case 1:
-                    // return redirect('admin/admin/list');
-                    return redirect('admin/dashboard');
+                    return redirect('admin/admin/list');
+                    //return redirect('admin/dashboard');
                 case 2:
                     return redirect('docente/dashboard');
                 case 3:
@@ -67,8 +67,8 @@ class AuthController extends Controller
             if (Auth::attempt($credentials, $remember)) {
                 switch (Auth::user()->user_type) {
                     case 1:
-                        //return redirect('admin/admin/list');
-                        return redirect('admin/dashboard');
+                        return redirect('admin/admin/list');
+                        //return redirect('admin/dashboard');
                     case 2:
                         return redirect('docente/dashboard');
                     case 3:

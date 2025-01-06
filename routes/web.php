@@ -179,9 +179,18 @@ Route::group(['middleware' =>'estudiante'], function (){
     Route::get('estudiante/change_password' , [UserController::class , 'change_password'] );
     Route::post('estudiante/change_password', [UserController::class , 'update_change_password'] );
 
-     // NUEVAS RUTAS: Gestión de credenciales y consulta de DNI
-    Route::post('estudiante/credenciales/guardar', [DashboardController::class, 'storeCredentials'])->name('estudiante.credenciales.guardar');
-    Route::post('estudiante/consulta-dni', [DashboardController::class, 'processConsultaDni'])->name('estudiante.consulta.dni.process');
+    //  // NUEVAS RUTAS: Gestión de credenciales y consulta de DNI
+    // Route::post('estudiante/credenciales/guardar', [DashboardController::class, 'storeCredentials'])->name('estudiante.credenciales.guardar');
+    // Route::post('estudiante/consulta-dni', [DashboardController::class, 'processConsultaDni'])->name('estudiante.consulta.dni.process');
 
+    // NUEVAS RUTAS
+    Route::post('estudiante/credencial/configurar', [DashboardController::class, 'configurarCredenciales'])->name('estudiante.credencial.configurar'); 
+    Route::post('estudiante/credencial/renovar', [DashboardController::class, 'renovarCredencialManual'])->name('estudiante.credencial.renovar');
+    Route::post('estudiante/consulta-dni', [DashboardController::class, 'processConsultaDni'])->name('estudiante.consulta.dni.process');
+    Route::post('estudiante/credenciales/guardar', [DashboardController::class, 'storeCredentials'])->name('estudiante.credenciales.guardar'); // Agregada esta ruta
+    
+
+    
+    
 
 });
