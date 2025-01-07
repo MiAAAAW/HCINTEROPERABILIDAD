@@ -34,34 +34,39 @@ class DashboardController extends Controller
      */
     public function configurarCredenciales(Request $request, ReniecService $reniecService)
     {
+        // Validar los datos ingresados por el usuario
         $validated = $request->validate([
             'credencial_actual' => 'required|string',
             'nueva_credencial' => 'required|string|min:8',
         ]);
-
-        $credentials = UserCredential::where('user_id', auth()->id())->firstOrFail();
-
+    
+        // Obtener las credenciales del usuario autenticado
+        $credentials = UserCredential::where('user_id', auth()->id())->first();
+    
+        if (!$credentials) {
+            return back()->withErrors(['msg' => 'No se encontraron credenciales para este usuario.']);
+        }
+    
         try {
-            // Actualizar credencial en RENIEC
+            // Llamar al servicio REST para actualizar la credencial en RENIEC
             $reniecService->actualizarCredencial(
-                $credentials->dni,
-                $validated['credencial_actual'],
-                $validated['nueva_credencial'],
-                $credentials->ruc
+                $credentials, // Objeto de credenciales
+                $validated['credencial_actual'], // Credencial inicial
+                $validated['nueva_credencial'] // Nueva credencial
             );
-
-            // Actualizar en la base de datos
+    
+            // Actualizar la credencial en la base de datos
             $credentials->update([
                 'password' => bcrypt($validated['nueva_credencial']),
                 'last_updated_at' => now(),
             ]);
-
-            return back()->with('success', 'Credencial inicial configurada correctamente.');
+    
+            return back()->with('success', 'Credencial configurada correctamente.');
         } catch (\Exception $e) {
-            Log::error('Error al configurar credencial: ' . $e->getMessage());
             return back()->withErrors(['msg' => 'Error al configurar credencial: ' . $e->getMessage()]);
         }
     }
+    
 
     /**
      * Renovar credencial manualmente.

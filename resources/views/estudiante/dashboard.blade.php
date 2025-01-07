@@ -39,17 +39,17 @@
             <h3 class="card-title">Gestionar Credenciales</h3>
           </div>
           <div class="card-body">
-            <form action="{{ route('estudiante.credencial.configurar') }}" method="POST">
+            <form method="POST" action="{{ route('configurar.credenciales') }}">
               @csrf
               <div class="form-group">
-                  <label for="credencial_actual">Credencial Actual</label>
-                  <input type="password" name="credencial_actual" id="credencial_actual" class="form-control" placeholder="Ingrese su credencial inicial" required>
+                  <label for="credencial_actual">Credencial Inicial (Proporcionada por RENIEC):</label>
+                  <input type="password" id="credencial_actual" name="credencial_actual" class="form-control" required>
               </div>
               <div class="form-group">
-                  <label for="nueva_credencial">Nueva Credencial</label>
-                  <input type="password" name="nueva_credencial" id="nueva_credencial" class="form-control" placeholder="Ingrese su nueva credencial" minlength="8" required>
+                  <label for="nueva_credencial">Nueva Credencial:</label>
+                  <input type="password" id="nueva_credencial" name="nueva_credencial" class="form-control" required minlength="8">
               </div>
-              <button type="submit" class="btn btn-primary mt-2" style="width: 100%;">Actualizar Credencial</button>
+              <button type="submit" class="btn btn-primary">Actualizar Credencial</button>
           </form>
           </div>
         </div>

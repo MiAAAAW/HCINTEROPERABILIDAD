@@ -25,27 +25,35 @@ class ReniecService
      */
     public function actualizarCredencial($credentials, $credencialAnterior, $nuevaContraseña)
     {
-        $url = $this->baseUrl . 'Actualizar?out=json';
-
+        // Verificar que el modelo de credenciales tenga los campos necesarios
+        if (!isset($credentials->dni)) {
+            throw new \Exception('El usuario no tiene un DNI asociado.');
+        }
+    
+        // Construir el payload
         $payload = [
             'PIDE' => [
-                'credencialAnterior' => $credencialAnterior,
-                'credencialNueva' => $nuevaContraseña,
-                'nuDni' => $credentials->dni,
-                'nuRuc' => '20181438364', // RUC único
+                'credencialAnterior' => $credencialAnterior, // Credencial actual ingresada
+                'credencialNueva' => $nuevaContraseña, // Nueva credencial
+                'nuDni' => $credentials->dni, // DNI del usuario
+                'nuRuc' => '20181438364', // RUC fijo
             ],
         ];
-
-        Log::info('Enviando solicitud de actualización de credencial a RENIEC.', [
-            'url' => $url,
-            'payload' => $payload,
-        ]);
-
-        $response = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8'])
-            ->post($url, $payload);
-
-        return $this->validateResponse($response, 'actualizar credencial');
+    
+        // Enviar la solicitud al API
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json; charset=UTF-8',
+        ])->post('https://ws2.pide.gob.pe/Rest/RENIEC/Actualizar', $payload);
+    
+        // Validar la respuesta
+        if ($response->failed()) {
+            $error = $response->json();
+            throw new \Exception('Error del API: ' . ($error['deResultado'] ?? 'Desconocido'));
+        }
+    
+        return $response->json();
     }
+    
 
     /**
      * Consultar información de un DNI en RENIEC.
