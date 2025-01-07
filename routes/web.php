@@ -18,6 +18,7 @@ use App\Http\Controllers\EstudianteNotasController;
 use App\Http\Controllers\MencionController;
 use App\Http\Controllers\NoticiaController;
 use App\Http\Controllers\ImageController;
+use App\Http\Controllers\ReniecController;
 use App\Models\Noticia;
 
 /*
@@ -182,16 +183,14 @@ Route::group(['middleware' =>'estudiante'], function (){
     //  // NUEVAS RUTAS: Gestión de credenciales y consulta de DNI
     // Route::post('estudiante/credenciales/guardar', [DashboardController::class, 'storeCredentials'])->name('estudiante.credenciales.guardar');
     // Route::post('estudiante/consulta-dni', [DashboardController::class, 'processConsultaDni'])->name('estudiante.consulta.dni.process');
+   
+    // --- RUTAS PARA EL CONSUMO DE RENIEC A TRAVÉS DE PIDE ---
+    // Actualizar credencial (cambiar clave en RENIEC/PIDE)
+    Route::post('estudiante/reniec/actualizar', [ReniecController::class, 'actualizarCredencial'])
+         ->name('reniec.actualizar');
 
-    // Rutas agrupadas para credenciales
-    Route::prefix('estudiante/credencial')->group(function () {
-        Route::post('configurar', [DashboardController::class, 'configurarCredenciales'])->name('estudiante.credencial.configurar');
-        Route::post('renovar', [DashboardController::class, 'renovarCredencialManual'])->name('estudiante.credencial.renovar');
-        Route::post('guardar', [DashboardController::class, 'storeCredentials'])->name('estudiante.credenciales.guardar');
-    });
-
-    // Ruta para consulta de DNI
-    Route::post('estudiante/consulta-dni', [DashboardController::class, 'processConsultaDni'])->name('estudiante.consulta.dni.process');
-    
+    // Consultar datos de una persona por DNI
+    Route::post('estudiante/reniec/consultar', [ReniecController::class, 'consultarDatos'])
+         ->name('reniec.consultar');
 
 });
