@@ -32,7 +32,8 @@ class EstudianteMiddleware
         else
         {
           Auth::logout(); 
-          return $next($request);  
+          // return $next($request);  
+          return redirect('/');
         }
     }
 }
