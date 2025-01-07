@@ -192,6 +192,6 @@ Route::group(['middleware' =>'estudiante'], function (){
 
     // Ruta para consulta de DNI
     Route::post('estudiante/consulta-dni', [DashboardController::class, 'processConsultaDni'])->name('estudiante.consulta.dni.process');
- 
+    
 
 });

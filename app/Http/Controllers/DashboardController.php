@@ -19,10 +19,6 @@ class DashboardController extends Controller
         } elseif (Auth::user()->user_type == 2) {
             return view('docente.dashboard', $data); // Dashboard del docente
         } elseif (Auth::user()->user_type == 3) {
-            // Obtener credenciales del estudiante
-            $credentials = UserCredential::where('user_id', Auth::id())->first();
-            $data['credentials'] = $credentials;
-
             return view('estudiante.dashboard', $data); // Dashboard del estudiante
         }
 
@@ -34,39 +30,34 @@ class DashboardController extends Controller
      */
     public function configurarCredenciales(Request $request, ReniecService $reniecService)
     {
-        // Validar los datos ingresados por el usuario
         $validated = $request->validate([
             'credencial_actual' => 'required|string',
             'nueva_credencial' => 'required|string|min:8',
         ]);
-    
-        // Obtener las credenciales del usuario autenticado
-        $credentials = UserCredential::where('user_id', auth()->id())->first();
-    
-        if (!$credentials) {
-            return back()->withErrors(['msg' => 'No se encontraron credenciales para este usuario.']);
-        }
-    
+
+        $credentials = UserCredential::where('user_id', auth()->id())->firstOrFail();
+
         try {
-            // Llamar al servicio REST para actualizar la credencial en RENIEC
+            // Actualizar credencial en RENIEC
             $reniecService->actualizarCredencial(
-                $credentials, // Objeto de credenciales
-                $validated['credencial_actual'], // Credencial inicial
-                $validated['nueva_credencial'] // Nueva credencial
+                $credentials->dni,
+                $validated['credencial_actual'],
+                $validated['nueva_credencial'],
+                $credentials->ruc
             );
-    
-            // Actualizar la credencial en la base de datos
+
+            // Actualizar en la base de datos
             $credentials->update([
                 'password' => bcrypt($validated['nueva_credencial']),
                 'last_updated_at' => now(),
             ]);
-    
-            return back()->with('success', 'Credencial configurada correctamente.');
+
+            return back()->with('success', 'Credencial inicial configurada correctamente.');
         } catch (\Exception $e) {
+            Log::error('Error al configurar credencial: ' . $e->getMessage());
             return back()->withErrors(['msg' => 'Error al configurar credencial: ' . $e->getMessage()]);
         }
     }
-    
 
     /**
      * Renovar credencial manualmente.
