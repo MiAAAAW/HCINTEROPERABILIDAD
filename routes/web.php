@@ -182,11 +182,8 @@ Route::group(['middleware' =>'estudiante'], function (){
 
     
     // --- RUTAS PARA EL CONSUMO DE RENIEC A TRAVÉS DE PIDE ---
-    // Actualizar credencial (cambiar clave en RENIEC/PIDE)
     Route::post('estudiante/reniec/actualizar', [ReniecController::class, 'actualizarCredencial'])
          ->name('reniec.actualizar');
-
-    // Consultar datos de una persona por DNI
     Route::post('estudiante/reniec/consultar', [ReniecController::class, 'consultarDatos'])
          ->name('reniec.consultar');
 
