@@ -1,9 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
-
-<div class="content-wrapper"><!-- AdminLTE pattern -->
-  <!-- Content Header (Page header) -->
+<div class="content-wrapper">
+  <!-- Header -->
   <div class="content-header">
     <div class="container-fluid">
       <div class="row mb-2">
@@ -13,45 +12,53 @@
       </div>
     </div>
   </div>
-  <!-- /.content-header -->
+  <!-- /Header -->
 
   <!-- Main content -->
   <section class="content">
     <div class="container-fluid">
 
-      <!-- Notificaciones de éxito o error (si usas session para otras cosas) -->
-      @if (session('success'))
-        <div class="alert alert-success">
-          {{ session('success') }}
-        </div>
-      @endif
-
-      @if ($errors->any())
-        <div class="alert alert-danger">
-          {{ $errors->first() }}
-        </div>
-      @endif
-
-      <!-- Formularios lado a lado (responsive) -->
-      <div class="row" style="gap: 20px; align-items: stretch;">
+      <!-- Fila centrada con dos col-md-5 -->
+      <div class="row justify-content-center" style="gap: 20px;">
         
-        <!-- Formulario para ACTUALIZAR CREDENCIAL -->
-        <div class="col-md-6"><!-- col-md-6 para 2 columnas en desktop -->
-          <div class="card" style="min-height: 300px;">
+        <!-- 1. Formulario ACTUALIZAR -->
+        <div class="col-md-5">
+          <div class="card">
             <div class="card-header bg-primary text-white">
               <h3 class="card-title">Gestionar Credenciales</h3>
             </div>
             <div class="card-body">
               <form id="frmActualizar" onsubmit="return false;">
                 @csrf
+                <!-- Credencial Anterior con botón ojo -->
                 <div class="form-group">
                   <label for="credencialAnterior">Credencial Actual:</label>
-                  <input type="password" id="credencialAnterior" name="credencialAnterior" class="form-control" required>
+                  <div class="input-group">
+                    <input type="password" id="credencialAnterior" name="credencialAnterior" class="form-control" required>
+                    <div class="input-group-append">
+                      <button class="btn btn-outline-secondary" type="button"
+                              onclick="togglePassword('credencialAnterior','iconAnterior')">
+                        <i id="iconAnterior" class="fa fa-eye"></i>
+                      </button>
+                    </div>
+                  </div>
                 </div>
+
+                <!-- Nueva Credencial con botón ojo -->
                 <div class="form-group">
                   <label for="credencialNueva">Nueva Credencial:</label>
-                  <input type="password" id="credencialNueva" name="credencialNueva" class="form-control" required minlength="8">
+                  <div class="input-group">
+                    <input type="password" id="credencialNueva" name="credencialNueva" class="form-control" required minlength="8">
+                    <div class="input-group-append">
+                      <button class="btn btn-outline-secondary" type="button"
+                              onclick="togglePassword('credencialNueva','iconNueva')">
+                        <i id="iconNueva" class="fa fa-eye"></i>
+                      </button>
+                    </div>
+                  </div>
                 </div>
+
+                <!-- DNI y RUC -->
                 <div class="form-group">
                   <label for="nuDni">DNI (Usuario):</label>
                   <input type="text" id="nuDni" name="nuDni" class="form-control" required>
@@ -60,17 +67,20 @@
                   <label for="nuRuc">RUC de la Entidad:</label>
                   <input type="text" id="nuRuc" name="nuRuc" class="form-control" required>
                 </div>
+
                 <button type="submit" class="btn btn-primary mt-2" style="width: 100%;">Actualizar Credencial</button>
               </form>
-              <!-- Aquí mostramos el resultado de actualizar -->
+
+              <!-- Resultado de actualizar -->
               <div id="resultadoActualizar" class="mt-3"></div>
             </div>
           </div>
         </div>
-        
-        <!-- Formulario para CONSULTAR DNI -->
-        <div class="col-md-6">
-          <div class="card" style="min-height: 300px;">
+        <!-- /Formulario ACTUALIZAR -->
+
+        <!-- 2. Formulario CONSULTAR -->
+        <div class="col-md-5">
+          <div class="card">
             <div class="card-header bg-success text-white">
               <h3 class="card-title">Consulta de DNI</h3>
             </div>
@@ -95,138 +105,161 @@
                 </div>
                 <button type="submit" class="btn btn-success mt-2" style="width: 100%;">Consultar</button>
               </form>
-              <!-- Aquí mostramos el resultado de consulta -->
+              
+              <!-- Resultado de consultar -->
               <div id="resultadoConsulta" class="mt-3"></div>
+            </div>
+          </div>
+        </div>
+        <!-- /Formulario CONSULTAR -->
+      </div>
+
+      <!-- Card de Resultados Generales (Opcional) abajo -->
+      <div class="row justify-content-center">
+        <div class="col-md-10">
+          <div class="card mt-4">
+            <div class="card-header bg-info text-white">
+              <h3 class="card-title">Resultados Generales</h3>
+            </div>
+            <div class="card-body">
+              <div id="resultadoGlobal"></div>
             </div>
           </div>
         </div>
       </div>
 
-    </div><!-- /.container-fluid -->
+    </div><!-- /container-fluid -->
   </section>
-</div><!-- /.content-wrapper -->
+</div><!-- /content-wrapper -->
 
 
-<!-- Scripts para manejar AJAX (fetch) -->
+<!-- Script JS -->
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  // =========================================
-  // 1. ACTUALIZAR CREDENCIAL
-  // =========================================
-  const frmActualizar = document.getElementById('frmActualizar');
-  const divActualizar = document.getElementById('resultadoActualizar');
+  // Toggle password (mostrar/ocultar)
+  function togglePassword(inputId, iconId) {
+    let input = document.getElementById(inputId);
+    let icon  = document.getElementById(iconId);
+    if (input.type === "password") {
+      input.type = "text";
+      icon.classList.remove("fa-eye");
+      icon.classList.add("fa-eye-slash");
+    } else {
+      input.type = "password";
+      icon.classList.remove("fa-eye-slash");
+      icon.classList.add("fa-eye");
+    }
+  }
 
-  frmActualizar.addEventListener('submit', function(e) {
-    e.preventDefault();
-    divActualizar.innerHTML = "";
+  document.addEventListener('DOMContentLoaded', function() {
+    /* =========================================================
+       1. ACTUALIZAR CREDENCIAL (frmActualizar)
+       ========================================================= */
+    const frmActualizar = document.getElementById('frmActualizar');
+    const divActualizar = document.getElementById('resultadoActualizar');
 
-    let formData = new FormData(frmActualizar);
+    frmActualizar.addEventListener('submit', function(e) {
+      e.preventDefault();
+      divActualizar.innerHTML = "";
 
-    fetch("{{ route('reniec.actualizar') }}", {
-      method: 'POST',
-      body: formData
-    })
-    .then(resp => resp.json())
-    .then(json => {
-      console.log("Actualizar JSON:", json);
+      let formData = new FormData(frmActualizar);
 
-      if (json.error) {
-        // Error del servidor (excepción, etc.)
+      fetch("{{ route('reniec.actualizar') }}", {
+        method: 'POST',
+        body: formData
+      })
+      .then(resp => resp.json())
+      .then(json => {
+        console.log("Actualizar JSON:", json);
+
+        if (json.error) {
+          divActualizar.innerHTML = `
+            <div class="alert alert-danger">
+              <strong>Error:</strong> ${json.error}
+            </div>`;
+          return;
+        }
+
+        // Asumimos la estructura: { "data": { "coResultado":"0000", "deResultado":"..." } }
+        let data = json.data || {};
+        let coRes = data.coResultado;
+        let deRes = data.deResultado;
+
+        if (coRes) {
+          if (coRes === '0000') {
+            divActualizar.innerHTML = `
+              <div class="alert alert-success">
+                <strong>¡Credencial actualizada con éxito!</strong><br>
+                ${deRes || 'Actualización realizada correctamente'}
+              </div>`;
+          } else {
+            divActualizar.innerHTML = `
+              <div class="alert alert-warning">
+                <strong>Atención:</strong> [${coRes}] ${deRes || 'No se pudo actualizar la credencial'}
+              </div>`;
+          }
+        } else {
+          divActualizar.innerHTML = `
+            <div class="alert alert-danger">
+              <strong>No se encontró "coResultado" en la respuesta</strong>
+            </div>`;
+        }
+      })
+      .catch(err => {
+        console.error(err);
         divActualizar.innerHTML = `
+          <div class="alert alert-danger">
+            <strong>Error de conexión:</strong> ${err}
+          </div>`;
+      });
+    });
+
+
+    /* =========================================================
+       2. CONSULTAR DNI (frmConsultar)
+       ========================================================= */
+    const frmConsultar = document.getElementById('frmConsultar');
+    const divConsulta  = document.getElementById('resultadoConsulta');
+
+    frmConsultar.addEventListener('submit', function(e) {
+      e.preventDefault();
+      divConsulta.innerHTML = "";
+
+      let formData = new FormData(frmConsultar);
+
+      fetch("{{ route('reniec.consultar') }}", {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(json => {
+        console.log("Consultar JSON:", json);
+        renderConsulta(json);
+      })
+      .catch(error => {
+        console.error("Error en fetch:", error);
+        divConsulta.innerHTML = `
+          <div class="alert alert-danger">
+            <strong>Error de conexión:</strong> ${error}
+          </div>`;
+      });
+    });
+
+    function renderConsulta(json) {
+      if (json.error) {
+        divConsulta.innerHTML = `
           <div class="alert alert-danger">
             <strong>Error:</strong> ${json.error}
           </div>`;
         return;
       }
-
-      // Estructura: { data: { coResultado, deResultado }, ... }
-      if (json.data && json.data.coResultado) {
-        const coRes = json.data.coResultado;
-        const deRes = json.data.deResultado || 'Sin descripción';
-
-        if (coRes === '0000') {
-          // éxito
-          divActualizar.innerHTML = `
-            <div class="alert alert-success">
-              <strong>¡Credencial actualizada con éxito!</strong><br>
-              ${deRes}
-            </div>`;
-        } else {
-          // Advertencia
-          divActualizar.innerHTML = `
-            <div class="alert alert-warning">
-              <strong>Atención:</strong> [${coRes}] ${deRes}
-            </div>`;
-        }
-      } else {
-        divActualizar.innerHTML = `
-          <div class="alert alert-danger">
-            <strong>No se encontró "coResultado" en la respuesta</strong>
-          </div>`;
-      }
-    })
-    .catch(err => {
-      console.error(err);
-      divActualizar.innerHTML = `
-        <div class="alert alert-danger">
-          <strong>Error de conexión:</strong> ${err}
-        </div>`;
-    });
-  });
-
-
-  // =========================================
-  // 2. CONSULTAR DNI
-  // =========================================
-  const frmConsultar = document.getElementById('frmConsultar');
-  const divConsulta  = document.getElementById('resultadoConsulta');
-
-  frmConsultar.addEventListener('submit', function(e) {
-    e.preventDefault();
-    divConsulta.innerHTML = "";
-
-    let formData = new FormData(frmConsultar);
-
-    fetch("{{ route('reniec.consultar') }}", {
-      method: 'POST',
-      body: formData
-    })
-    .then(response => response.json())
-    .then(json => {
-      console.log("Consultar JSON:", json);
-      renderConsulta(json);
-    })
-    .catch(error => {
-      console.error("Error en fetch:", error);
-      divConsulta.innerHTML = `
-        <div class="alert alert-danger">
-          <strong>Error de conexión:</strong> ${error}
-        </div>`;
-    });
-  });
-
-  function renderConsulta(json) {
-    if (json.error) {
-      divConsulta.innerHTML = `
-        <div class="alert alert-danger">
-          <strong>Error:</strong> ${json.error}
-        </div>`;
-      return;
-    }
-
-    if (json.data && json.data.consultarResponse) {
-      const retorno = json.data.consultarResponse.return;
-      if (!retorno) {
-        divConsulta.innerHTML = `<div class="alert alert-danger">No se encontró "return" en la respuesta.</div>`;
-        return;
-      }
-
-      const coResultado  = retorno.coResultado;
-      const deResultado  = retorno.deResultado;
-      const datosPersona = retorno.datosPersona;
+      
+      // Estructura: { "data": { "coResultado": "0000", "deResultado":"...", "datosPersona": {...} } }
+      let data = json.data || {};
+      let coResultado  = data.coResultado;
+      let deResultado  = data.deResultado;
+      let datosPersona = data.datosPersona;
 
       if (coResultado === "0000") {
-        // éxito
         let html = `
           <div class="alert alert-success">
             <h5>Consulta Exitosa</h5>
@@ -235,14 +268,14 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
 
         if (datosPersona) {
-          let apPrimer    = datosPersona.apPrimer || 'N/A';
-          let apSegundo   = datosPersona.apSegundo || 'N/A';
-          let prenombres  = datosPersona.prenombres || 'N/A';
-          let direccion   = datosPersona.direccion || 'N/A';
+          let apPrimer    = datosPersona.apPrimer    || 'N/A';
+          let apSegundo   = datosPersona.apSegundo   || 'N/A';
+          let prenombres  = datosPersona.prenombres  || 'N/A';
+          let direccion   = datosPersona.direccion   || 'N/A';
           let estadoCivil = datosPersona.estadoCivil || 'N/A';
           let restriccion = datosPersona.restriccion || 'N/A';
-          let ubigeo      = datosPersona.ubigeo || 'N/A';
-          let fotoBase64  = datosPersona.foto || '';
+          let ubigeo      = datosPersona.ubigeo      || 'N/A';
+          let fotoBase64  = datosPersona.foto        || '';
 
           html += `
             <ul>
@@ -260,12 +293,14 @@ document.addEventListener('DOMContentLoaded', function() {
             html += `
               <div>
                 <strong>Foto:</strong><br>
-                <img src="data:image/jpeg;base64,${fotoBase64}" alt="Foto del DNI" style="max-width: 200px;">
+                <img src="data:image/jpeg;base64,${fotoBase64}" 
+                     alt="Foto del DNI" style="max-width: 200px;">
               </div>
             `;
           }
-          html += `</div>`; // cierra alert-success
         }
+
+        html += `</div>`; // Cerrar alert
         divConsulta.innerHTML = html;
 
       } else {
@@ -275,126 +310,13 @@ document.addEventListener('DOMContentLoaded', function() {
             <strong>Atención:</strong> [${coResultado}] ${deResultado}
           </div>`;
       }
-    } else {
-      divConsulta.innerHTML = `
-        <div class="alert alert-danger">
-          No se encontró "consultarResponse" en la respuesta.
-        </div>`;
     }
-  }
-});
-</script>
 
+  });
+</script>
 @endsection
 
 
 
 
 
-
-
-{{-- @extends('layouts.app')
-
-@section('content')
-
-<div class="content-wrapper">
-  <!-- Content Header (Page header) -->
-  <div class="content-header">
-    <div class="container-fluid">
-      <div class="row mb-2">
-        <div class="col-sm-12">
-          <h1 class="m-0">Consulta de Documento Nacional de Identidad</h1>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Main content -->
-  <section class="content">
-    <div class="container-fluid">
-
-      <!-- Notificaciones de éxito o error -->
-      @if (session('success'))
-        <div class="alert alert-success">
-          {{ session('success') }}
-        </div>
-      @endif
-
-      @if ($errors->any())
-        <div class="alert alert-danger">
-          {{ $errors->first() }}
-        </div>
-      @endif
-
-      <!-- Formularios lado a lado -->
-      <div class="d-flex" style="gap: 20px; align-items: stretch;">
-        <!-- Formulario para guardar credenciales -->
-        <div class="card" style="flex: 1; min-height: 300px;">
-          <div class="card-header">
-            <h3 class="card-title">Gestionar Credenciales</h3>
-          </div>
-          <div class="card-body">
-            <form method="POST" action="{{ route('configurar.credenciales') }}">
-              @csrf
-              <div class="form-group">
-                  <label for="credencial_actual">Credencial Inicial (Proporcionada por RENIEC):</label>
-                  <input type="password" id="credencial_actual" name="credencial_actual" class="form-control" required>
-              </div>
-              <div class="form-group">
-                  <label for="nueva_credencial">Nueva Credencial:</label>
-                  <input type="password" id="nueva_credencial" name="nueva_credencial" class="form-control" required minlength="8">
-              </div>
-              <button type="submit" class="btn btn-primary">Actualizar Credencial</button>
-          </form>
-          </div>
-        </div>
-
-        <!-- Formulario para consultar DNI -->
-        <div class="card" style="flex: 1; min-height: 300px;">
-          <div class="card-header">
-            <h3 class="card-title">Consulta de DNI</h3>
-          </div>
-          <div class="card-body">
-            <form action="{{ route('estudiante.consulta.dni.process') }}" method="POST">
-              @csrf
-              <div class="form-group">
-                <label for="dni_consulta">DNI a Consultar</label>
-                <input type="text" name="dni_consulta" id="dni_consulta" class="form-control" required>
-              </div>
-              <button type="submit" class="btn btn-primary mt-2" style="width: 100%;">Consultar</button>
-            </form>
-          </div>
-        </div>
-      </div>
-
-      <!-- Resultados de la consulta -->
-      @if (session('data'))
-        <div class="card mt-4">
-          <div class="card-header">
-            <h3 class="card-title">Resultados de la Consulta</h3>
-          </div>
-          <div class="card-body">
-            <ul>
-              <li><strong>Primer Apellido:</strong> {{ session('data')['apPrimer'] ?? 'N/A' }}</li>
-              <li><strong>Segundo Apellido:</strong> {{ session('data')['apSegundo'] ?? 'N/A' }}</li>
-              <li><strong>Nombres:</strong> {{ session('data')['prenombres'] ?? 'N/A' }}</li>
-              <li><strong>Estado Civil:</strong> {{ session('data')['estadoCivil'] ?? 'N/A' }}</li>
-              <li><strong>Ubigeo:</strong> {{ session('data')['ubigeo'] ?? 'N/A' }}</li>
-              <li><strong>Dirección:</strong> {{ session('data')['direccion'] ?? 'N/A' }}</li>
-              <li><strong>Restricción:</strong> {{ session('data')['restriccion'] ?? 'N/A' }}</li>
-            </ul>
-            @if (session('data')['foto'])
-              <div>
-                <strong>Foto:</strong><br>
-                <img src="data:image/jpeg;base64,{{ session('data')['foto'] }}" alt="Foto del DNI" style="max-width: 200px;">
-              </div>
-            @endif
-          </div>
-        </div>
-      @endif
-
-    </div>
-  </section>
-</div>
-
-@endsection --}}
