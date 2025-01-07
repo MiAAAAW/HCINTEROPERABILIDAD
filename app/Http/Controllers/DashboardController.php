@@ -11,19 +11,24 @@ use App\Services\ReniecService;
 class DashboardController extends Controller
 {
     public function dashboard()
-    {
-        $data['header_title'] = 'Dashboard';
-
-        if (Auth::user()->user_type == 1) {
-            return view('admin.dashboard', $data); // Dashboard del administrador
-        } elseif (Auth::user()->user_type == 2) {
-            return view('docente.dashboard', $data); // Dashboard del docente
-        } elseif (Auth::user()->user_type == 3) {
-            return view('estudiante.dashboard', $data); // Dashboard del estudiante
-        }
-
-        abort(403, 'No tiene acceso a esta sección.'); // Manejar accesos no autorizados
+    {   
+        
+          $data['header_title']='Dashboard';
+          if(Auth::user()->user_type == 1)
+         {  
+          return view('admin.dashboard',$data);  
+         }
+         else if(Auth::user()->user_type == 2)
+         {
+          return view('docente.dashboard',$data);  
+         }
+         else if(Auth::user()->user_type == 3)
+         {
+          return view('estudiante.dashboard',$data);  
+         }   
+         
     }
+}
 
 //     /**
 //      * Configurar credenciales iniciales para RENIEC.
@@ -119,4 +124,4 @@ class DashboardController extends Controller
 //             return back()->withErrors(['msg' => 'Error al consultar DNI: ' . $e->getMessage()]);
 //         }
 //     }
-}
+//}
