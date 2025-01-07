@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use App\Models\UserCredential;
 use App\Services\ReniecService;
 
@@ -14,69 +15,91 @@ class DashboardController extends Controller
         $data['header_title'] = 'Dashboard';
 
         if (Auth::user()->user_type == 1) {
-            return view('admin.dashboard', $data); // Redirigir al dashboard del administrador
+            return view('admin.dashboard', $data); // Dashboard del administrador
         } elseif (Auth::user()->user_type == 2) {
-            return view('docente.dashboard', $data); // Redirigir al dashboard del docente
+            return view('docente.dashboard', $data); // Dashboard del docente
         } elseif (Auth::user()->user_type == 3) {
             // Obtener credenciales del estudiante
             $credentials = UserCredential::where('user_id', Auth::id())->first();
             $data['credentials'] = $credentials;
 
-            return view('estudiante.dashboard', $data); // Redirigir al dashboard del estudiante
+            return view('estudiante.dashboard', $data); // Dashboard del estudiante
         }
 
         abort(403, 'No tiene acceso a esta sección.'); // Manejar accesos no autorizados
     }
 
+    /**
+     * Configurar credenciales iniciales para RENIEC.
+     */
     public function configurarCredenciales(Request $request, ReniecService $reniecService)
     {
         $validated = $request->validate([
             'credencial_actual' => 'required|string',
             'nueva_credencial' => 'required|string|min:8',
         ]);
-    
+
         $credentials = UserCredential::where('user_id', auth()->id())->firstOrFail();
-    
+
         try {
-            // Llamar al servicio REST para actualizar la credencial
+            // Actualizar credencial en RENIEC
             $reniecService->actualizarCredencial(
-                $credentials,
+                $credentials->dni,
                 $validated['credencial_actual'],
-                $validated['nueva_credencial']
+                $validated['nueva_credencial'],
+                $credentials->ruc
             );
-    
-            // Guardar la nueva credencial en la base de datos
+
+            // Actualizar en la base de datos
             $credentials->update([
                 'password' => bcrypt($validated['nueva_credencial']),
                 'last_updated_at' => now(),
             ]);
-    
-            return back()->with('success', 'Credencial inicial actualizada correctamente.');
+
+            return back()->with('success', 'Credencial inicial configurada correctamente.');
         } catch (\Exception $e) {
-            return back()->withErrors(['msg' => 'Error al actualizar credencial: ' . $e->getMessage()]);
+            Log::error('Error al configurar credencial: ' . $e->getMessage());
+            return back()->withErrors(['msg' => 'Error al configurar credencial: ' . $e->getMessage()]);
         }
     }
 
+    /**
+     * Renovar credencial manualmente.
+     */
     public function renovarCredencialManual(Request $request, ReniecService $reniecService)
     {
         $credentials = UserCredential::where('user_id', auth()->id())->firstOrFail();
 
-        $nuevaCredencial = 'Clave' . rand(1000, 9999);
+        if ($credentials->isPasswordExpired()) {
+            $nuevaCredencial = 'Clave' . rand(1000, 9999);
 
-        try {
-            $reniecService->actualizarCredencial($credentials, $credentials->password, $nuevaCredencial);
+            try {
+                // Actualizar credencial en RENIEC
+                $reniecService->actualizarCredencial(
+                    $credentials->dni,
+                    $credentials->password,
+                    $nuevaCredencial,
+                    $credentials->ruc
+                );
 
-            $credentials->update([
-                'password' => bcrypt($nuevaCredencial),
-                'last_updated_at' => now(),
-            ]);
+                // Actualizar en la base de datos
+                $credentials->update([
+                    'password' => $nuevaCredencial, // Se cifrará automáticamente
+                    'last_updated_at' => now(),
+                ]);
 
-            return back()->with('success', 'Credencial renovada manualmente.');
-        } catch (\Exception $e) {
-            return back()->withErrors(['msg' => $e->getMessage()]);
+                return back()->with('success', 'Credencial renovada manualmente.');
+            } catch (\Exception $e) {
+                return back()->withErrors(['msg' => 'Error al renovar credencial: ' . $e->getMessage()]);
+            }
         }
+
+        return back()->with('info', 'La credencial aún no ha caducado.');
     }
 
+    /**
+     * Consultar información de un DNI.
+     */
     public function processConsultaDni(Request $request, ReniecService $reniecService)
     {
         $validated = $request->validate([
@@ -86,11 +109,18 @@ class DashboardController extends Controller
         $credentials = UserCredential::where('user_id', auth()->id())->firstOrFail();
 
         try {
-            $data = $reniecService->consultarDni($validated['dni_consulta'], $credentials);
+            // Consultar información del DNI
+            $data = $reniecService->consultarDni(
+                $validated['dni_consulta'],
+                $credentials->dni,
+                $credentials->password,
+                $credentials->ruc
+            );
+
             return back()->with('data', $data);
         } catch (\Exception $e) {
-            return back()->withErrors(['msg' => $e->getMessage()]);
+            Log::error('Error al consultar DNI: ' . $e->getMessage());
+            return back()->withErrors(['msg' => 'Error al consultar DNI: ' . $e->getMessage()]);
         }
     }
 }
-
