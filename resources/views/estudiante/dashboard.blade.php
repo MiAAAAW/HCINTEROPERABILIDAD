@@ -19,7 +19,7 @@
   <section class="content">
     <div class="container-fluid">
 
-      <!-- Notificaciones de éxito o error (si usas session para otras cosas) -->
+      <!-- Notificaciones de éxito o error (opcional) -->
       @if (session('success'))
         <div class="alert alert-success">
           {{ session('success') }}
@@ -32,11 +32,11 @@
         </div>
       @endif
 
-      <!-- Formularios lado a lado (responsive) -->
+      <!-- ROW con dos columnas para los formularios -->
       <div class="row" style="gap: 20px; align-items: stretch;">
         
-        <!-- Formulario para ACTUALIZAR CREDENCIAL -->
-        <div class="col-md-6"><!-- col-md-6 para 2 columnas en desktop -->
+        <!-- Columna 1: Formulario ACTUALIZAR CREDENCIAL -->
+        <div class="col-md-6"><!-- col-md-6 para que sean 2 columnas en desktop -->
           <div class="card" style="min-height: 300px;">
             <div class="card-header bg-primary text-white">
               <h3 class="card-title">Gestionar Credenciales</h3>
@@ -62,13 +62,14 @@
                 </div>
                 <button type="submit" class="btn btn-primary mt-2" style="width: 100%;">Actualizar Credencial</button>
               </form>
-              <!-- Aquí mostramos el resultado de actualizar -->
+              <!-- Aquí se mostrará el resultado de actualizar -->
               <div id="resultadoActualizar" class="mt-3"></div>
             </div>
           </div>
         </div>
-        
-        <!-- Formulario para CONSULTAR DNI -->
+        <!-- /Columna 1 -->
+
+        <!-- Columna 2: Formulario CONSULTAR DNI -->
         <div class="col-md-6">
           <div class="card" style="min-height: 300px;">
             <div class="card-header bg-success text-white">
@@ -95,24 +96,27 @@
                 </div>
                 <button type="submit" class="btn btn-success mt-2" style="width: 100%;">Consultar</button>
               </form>
-              <!-- Aquí mostramos el resultado de consulta -->
+              <!-- Aquí se mostrará el resultado de la consulta -->
               <div id="resultadoConsulta" class="mt-3"></div>
             </div>
           </div>
         </div>
-      </div>
+        <!-- /Columna 2 -->
+
+      </div><!-- /.row -->
 
     </div><!-- /.container-fluid -->
   </section>
 </div><!-- /.content-wrapper -->
 
 
-<!-- Scripts para manejar AJAX (fetch) -->
+<!-- Scripts para manejo AJAX -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // =========================================
-  // 1. ACTUALIZAR CREDENCIAL
-  // =========================================
+
+  /* =========================================
+     1. ACTUALIZAR CREDENCIAL
+     ========================================= */
   const frmActualizar = document.getElementById('frmActualizar');
   const divActualizar = document.getElementById('resultadoActualizar');
 
@@ -131,7 +135,7 @@ document.addEventListener('DOMContentLoaded', function() {
       console.log("Actualizar JSON:", json);
 
       if (json.error) {
-        // Error del servidor (excepción, etc.)
+        // Error del servidor
         divActualizar.innerHTML = `
           <div class="alert alert-danger">
             <strong>Error:</strong> ${json.error}
@@ -139,7 +143,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
       }
 
-      // Estructura: { data: { coResultado, deResultado }, ... }
+      // Estructura que ya te funcionaba: { data: { coResultado, deResultado }, ... }
       if (json.data && json.data.coResultado) {
         const coRes = json.data.coResultado;
         const deRes = json.data.deResultado || 'Sin descripción';
@@ -152,7 +156,7 @@ document.addEventListener('DOMContentLoaded', function() {
               ${deRes}
             </div>`;
         } else {
-          // Advertencia
+          // coResultado != '0000'
           divActualizar.innerHTML = `
             <div class="alert alert-warning">
               <strong>Atención:</strong> [${coRes}] ${deRes}
@@ -166,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     })
     .catch(err => {
-      console.error(err);
+      console.error("Error Actualizar:", err);
       divActualizar.innerHTML = `
         <div class="alert alert-danger">
           <strong>Error de conexión:</strong> ${err}
@@ -175,9 +179,9 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
 
-  // =========================================
-  // 2. CONSULTAR DNI
-  // =========================================
+  /* =========================================
+     2. CONSULTAR DNI
+     ========================================= */
   const frmConsultar = document.getElementById('frmConsultar');
   const divConsulta  = document.getElementById('resultadoConsulta');
 
@@ -197,7 +201,7 @@ document.addEventListener('DOMContentLoaded', function() {
       renderConsulta(json);
     })
     .catch(error => {
-      console.error("Error en fetch:", error);
+      console.error("Error Consultar:", error);
       divConsulta.innerHTML = `
         <div class="alert alert-danger">
           <strong>Error de conexión:</strong> ${error}
@@ -214,10 +218,14 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
 
+    // Estructura SOAP/JSON que ya te funcionaba => { data: { consultarResponse: { return: {...} } } }
     if (json.data && json.data.consultarResponse) {
       const retorno = json.data.consultarResponse.return;
       if (!retorno) {
-        divConsulta.innerHTML = `<div class="alert alert-danger">No se encontró "return" en la respuesta.</div>`;
+        divConsulta.innerHTML = `
+          <div class="alert alert-danger">
+            No se encontró "return" en la respuesta.
+          </div>`;
         return;
       }
 
@@ -226,7 +234,6 @@ document.addEventListener('DOMContentLoaded', function() {
       const datosPersona = retorno.datosPersona;
 
       if (coResultado === "0000") {
-        // éxito
         let html = `
           <div class="alert alert-success">
             <h5>Consulta Exitosa</h5>
@@ -235,14 +242,14 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
 
         if (datosPersona) {
-          let apPrimer    = datosPersona.apPrimer || 'N/A';
-          let apSegundo   = datosPersona.apSegundo || 'N/A';
+          let apPrimer    = datosPersona.apPrimer   || 'N/A';
+          let apSegundo   = datosPersona.apSegundo  || 'N/A';
           let prenombres  = datosPersona.prenombres || 'N/A';
-          let direccion   = datosPersona.direccion || 'N/A';
-          let estadoCivil = datosPersona.estadoCivil || 'N/A';
-          let restriccion = datosPersona.restriccion || 'N/A';
-          let ubigeo      = datosPersona.ubigeo || 'N/A';
-          let fotoBase64  = datosPersona.foto || '';
+          let direccion   = datosPersona.direccion  || 'N/A';
+          let estadoCivil = datosPersona.estadoCivil|| 'N/A';
+          let restriccion = datosPersona.restriccion|| 'N/A';
+          let ubigeo      = datosPersona.ubigeo     || 'N/A';
+          let fotoBase64  = datosPersona.foto       || '';
 
           html += `
             <ul>
@@ -264,12 +271,12 @@ document.addEventListener('DOMContentLoaded', function() {
               </div>
             `;
           }
-          html += `</div>`; // cierra alert-success
+          html += `</div>`; // cierra alert
         }
         divConsulta.innerHTML = html;
 
       } else {
-        // coResultado != 0000 => error
+        // coResultado != "0000" => error
         divConsulta.innerHTML = `
           <div class="alert alert-warning">
             <strong>Atención:</strong> [${coResultado}] ${deResultado}
@@ -284,9 +291,4 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 </script>
-
 @endsection
-
-
-
-
