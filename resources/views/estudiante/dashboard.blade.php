@@ -1,4 +1,71 @@
-{{ dd(route('reniec.actualizar')) }}
+@extends('layouts.app')
+
+@section('content')
+<div class="container">
+    <h1>Panel de Estudiante</h1>
+    <p>Consumo de servicios RENIEC a través de la Plataforma PIDE</p>
+
+    {{-- Si deseas mensajes con session, podrías poner:
+         @if(session('success')) <div>...</div> @endif
+         @if(session('error')) <div>...</div> @endif
+    --}}
+
+    {{-- FORMULARIO: ACTUALIZAR CREDENCIAL PIDE --}}
+    <div class="card mb-4">
+        <div class="card-header">Actualizar Credencial PIDE (RENIEC)</div>
+        <div class="card-body">
+            <form action="{{ route('reniec.actualizar') }}" method="POST">
+                @csrf
+                <div class="mb-3">
+                    <label class="form-label">Credencial Anterior</label>
+                    <input type="text" name="credencialAnterior" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Nueva Credencial</label>
+                    <input type="text" name="credencialNueva" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">DNI</label>
+                    <input type="text" name="nuDni" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">RUC</label>
+                    <input type="text" name="nuRuc" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Actualizar</button>
+            </form>
+        </div>
+    </div>
+
+    {{-- FORMULARIO: CONSULTAR DATOS POR DNI --}}
+    <div class="card">
+        <div class="card-header">Consultar Datos en RENIEC</div>
+        <div class="card-body">
+            <form action="{{ route('reniec.consultar') }}" method="POST">
+                @csrf
+                <div class="mb-3">
+                    <label class="form-label">DNI a Consultar</label>
+                    <input type="text" name="nuDniConsulta" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Tu DNI (Usuario)</label>
+                    <input type="text" name="nuDniUsuario" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">RUC de la Entidad</label>
+                    <input type="text" name="nuRucUsuario" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Contraseña PIDE (Clave Actualizada)</label>
+                    <input type="text" name="password" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-success">Consultar</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+@endsection
 
 
 
