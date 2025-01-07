@@ -15,62 +15,7 @@
   </div>
   <!-- /.content-header -->
 
-  <!-- Main content -->
-  <div class="container">
-      <!-- Spinner de carga -->
-      <div id="loadingSpinner" style="display: none; text-align: center; margin: 20px;">
-          <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: gray;"></i>
-          <p>Cargando estado...</p>
-      </div>
-
-      <!-- Botón del estado -->
-      <div id="statusButton" style="display: none;">
-          <button class="btn" style="background-color: green; color: white; border: none; padding: 10px 20px; font-size: 16px;" id="reniecButton">
-              Cargando...
-          </button>
-      </div>
-  </div>
-
-  <script>
-      document.addEventListener('DOMContentLoaded', function () {
-          const loadingSpinner = document.getElementById('loadingSpinner');
-          const statusButton = document.getElementById('statusButton');
-          const reniecButton = document.getElementById('reniecButton');
-
-          // Mostrar el spinner al inicio
-          loadingSpinner.style.display = 'block';
-
-          // Realizar la solicitud directamente al servicio de RENIEC
-          fetch('https://ws2.pide.gob.pe/Rest/RENIEC/')
-              .then(response => {
-                  if (response.status === 202) {
-                      return { reniecStatus: true };
-                  } else {
-                      return { reniecStatus: false };
-                  }
-              })
-              .then(data => {
-                  // Ocultar el spinner y mostrar el botón con el estado
-                  loadingSpinner.style.display = 'none';
-                  statusButton.style.display = 'block';
-
-                  // Cambiar el estado del botón
-                  if (data.reniecStatus) {
-                      reniecButton.style.backgroundColor = 'green';
-                      reniecButton.textContent = 'Conexión Activa';
-                  } else {
-                      reniecButton.style.backgroundColor = 'orange';
-                      reniecButton.textContent = 'Conexión Desconectada';
-                  }
-              })
-              .catch(error => {
-                  loadingSpinner.style.display = 'none';
-                  statusButton.style.display = 'block';
-                  reniecButton.style.backgroundColor = 'red';
-                  reniecButton.textContent = 'Error de conexión';
-              });
-      });
-  </script>
+ 
   {{-- <section class="content">
     <div class="container-fluid">
       <!-- Small boxes (Stat box) -->
