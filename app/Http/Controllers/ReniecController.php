@@ -2,22 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Auth;
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
-
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 
 class ReniecController extends Controller
 {
     /**
-     * Método para actualizar la credencial de un usuario (contraseña) ante RENIEC.
-     * POST /estudiante/reniec/actualizar
+     * Actualiza la credencial (contraseña) del usuario en RENIEC/PIDE.
+     * Endpoint local: POST /estudiante/reniec/actualizar
      */
     public function actualizarCredencial(Request $request)
     {
-        // Validación de campos que se requieren para RENIEC (método Actualizar)
+        // 1. Validar los campos necesarios
         $request->validate([
             'credencialAnterior' => 'required|string',
             'credencialNueva'    => 'required|string',
@@ -25,7 +21,7 @@ class ReniecController extends Controller
             'nuRuc'              => 'required|string',
         ]);
 
-        // Arma el cuerpo JSON que se enviará al WebService
+        // 2. Preparar el cuerpo JSON
         $body = [
             'PIDE' => [
                 'credencialAnterior' => $request->input('credencialAnterior'),
@@ -35,13 +31,13 @@ class ReniecController extends Controller
             ]
         ];
 
-        // Instancia del cliente Guzzle
+        // 3. Instanciar el cliente Guzzle
         $client = new Client([
-            'base_uri' => env('PIDE_BASE_URL', 'https://ws2.pide.gob.pe/Rest/RENIEC')
+            'base_uri' => env('PIDE_BASE_URL') // "https://ws2.pide.gob.pe/Rest/RENIEC"
         ]);
 
         try {
-            // Hacemos un POST para Actualizar, pidiendo la respuesta en JSON (?out=json)
+            // 4. POST a "/Actualizar?out=json"
             $response = $client->post('Actualizar?out=json', [
                 'headers' => [
                     'Content-Type' => 'application/json; charset=UTF-8',
@@ -49,19 +45,20 @@ class ReniecController extends Controller
                 'json' => $body
             ]);
 
-            // Procesamos la respuesta
-            $statusCode   = $response->getStatusCode(); // 200, 400, 500, etc.
-            $responseBody = $response->getBody()->getContents();
+            // 5. Procesar la respuesta
+            $statusCode   = $response->getStatusCode();           // 200, 400, 500, etc.
+            $responseBody = $response->getBody()->getContents();  // Texto JSON
             $jsonData     = json_decode($responseBody, true);
 
-            // Retorna la respuesta (puedes adaptarla a tu conveniencia)
+            // 6. Retornar la respuesta (JSON). 
+            //    Podrías también redirigir con session si prefieres.
             return response()->json([
                 'status_code' => $statusCode,
                 'data'        => $jsonData
             ], 200);
 
         } catch (\Exception $e) {
-            // Manejo de excepciones (errores de conexión, timeouts, etc.)
+            // Manejo de excepciones (errores de red, timeouts, etc.)
             return response()->json([
                 'error' => $e->getMessage()
             ], 500);
@@ -69,20 +66,20 @@ class ReniecController extends Controller
     }
 
     /**
-     * Método para consultar datos de una persona por DNI.
-     * POST /estudiante/reniec/consultar
+     * Consulta datos de una persona por DNI en RENIEC/PIDE.
+     * Endpoint local: POST /estudiante/reniec/consultar
      */
     public function consultarDatos(Request $request)
     {
-        // Validación de campos requeridos para RENIEC (método Consultar)
+        // 1. Validar los campos necesarios
         $request->validate([
-            'nuDniConsulta' => 'required|string',
-            'nuDniUsuario'  => 'required|string',
-            'nuRucUsuario'  => 'required|string',
-            'password'      => 'required|string',
+            'nuDniConsulta' => 'required|string', // DNI a consultar
+            'nuDniUsuario'  => 'required|string', // Tu DNI (usuario)
+            'nuRucUsuario'  => 'required|string', // RUC de la Entidad
+            'password'      => 'required|string', // Credencial PIDE (la nueva)
         ]);
 
-        // Arma el cuerpo JSON que se enviará al WebService
+        // 2. Armar el body JSON
         $body = [
             'PIDE' => [
                 'nuDniConsulta' => $request->input('nuDniConsulta'),
@@ -92,13 +89,13 @@ class ReniecController extends Controller
             ]
         ];
 
-        // Instancia del cliente Guzzle
+        // 3. Cliente Guzzle
         $client = new Client([
-            'base_uri' => env('PIDE_BASE_URL', 'https://ws2.pide.gob.pe/Rest/RENIEC')
+            'base_uri' => env('PIDE_BASE_URL')
         ]);
 
         try {
-            // Hacemos un POST para Consultar, pidiendo la respuesta en JSON
+            // 4. POST a "/Consultar?out=json"
             $response = $client->post('Consultar?out=json', [
                 'headers' => [
                     'Content-Type' => 'application/json; charset=UTF-8',
@@ -106,13 +103,15 @@ class ReniecController extends Controller
                 'json' => $body
             ]);
 
+            // 5. Procesar la respuesta
             $statusCode   = $response->getStatusCode();
             $responseBody = $response->getBody()->getContents();
             $jsonData     = json_decode($responseBody, true);
 
+            // 6. Devolver el resultado
             return response()->json([
                 'status_code' => $statusCode,
-                'data'        => $jsonData,
+                'data'        => $jsonData
             ], 200);
 
         } catch (\Exception $e) {

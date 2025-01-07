@@ -180,10 +180,7 @@ Route::group(['middleware' =>'estudiante'], function (){
     Route::get('estudiante/change_password' , [UserController::class , 'change_password'] );
     Route::post('estudiante/change_password', [UserController::class , 'update_change_password'] );
 
-    //  // NUEVAS RUTAS: Gestión de credenciales y consulta de DNI
-    // Route::post('estudiante/credenciales/guardar', [DashboardController::class, 'storeCredentials'])->name('estudiante.credenciales.guardar');
-    // Route::post('estudiante/consulta-dni', [DashboardController::class, 'processConsultaDni'])->name('estudiante.consulta.dni.process');
-   
+    
     // --- RUTAS PARA EL CONSUMO DE RENIEC A TRAVÉS DE PIDE ---
     // Actualizar credencial (cambiar clave en RENIEC/PIDE)
     Route::post('estudiante/reniec/actualizar', [ReniecController::class, 'actualizarCredencial'])
