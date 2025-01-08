@@ -1,6 +1,180 @@
 @extends('layouts.app')
 
 @section('content')
+<div class="content-wrapper">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-12">
+                    <h1 class="m-0">Consulta y Actualización de Credenciales (RENIEC - PIDE)</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">
+            @if (session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                </div>
+            @endif
+
+            @if ($errors->any())
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ $errors->first() }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                </div>
+            @endif
+
+            <div class="row" style="gap: 20px;">
+                <!-- Formulario Actualizar Credenciales -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h3 class="card-title">Gestionar Credenciales</h3>
+                        </div>
+                        <div class="card-body">
+                            <form id="frmActualizar" autocomplete="off">
+                                @csrf
+                                <div class="form-group mb-3 position-relative">
+                                    <label for="credencialAnterior">Credencial Actual:</label>
+                                    <div class="input-group">
+                                        <input type="password" id="credencialAnterior" name="credencialAnterior" class="form-control" required minlength="8">
+                                        <button type="button" class="btn btn-outline-secondary toggle-password" data-target="credencialAnterior">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="form-group mb-3 position-relative">
+                                    <label for="credencialNueva">Nueva Credencial:</label>
+                                    <div class="input-group">
+                                        <input type="password" id="credencialNueva" name="credencialNueva" class="form-control" required minlength="8">
+                                        <button type="button" class="btn btn-outline-secondary toggle-password" data-target="credencialNueva">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="nuDni">DNI (Usuario):</label>
+                                    <input type="text" id="nuDni" name="nuDni" class="form-control" required pattern="\d{8}" title="El DNI debe tener 8 dígitos">
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="nuRuc">RUC de la Entidad:</label>
+                                    <input type="text" id="nuRuc" name="nuRuc" class="form-control" required pattern="\d{11}" title="El RUC debe tener 11 dígitos">
+                                </div>
+                                <button type="submit" class="btn btn-primary mt-2" style="width: 100%;">Actualizar Credencial</button>
+                            </form>
+                            <div id="resultadoActualizar" class="mt-3"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formulario Consultar DNI -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h3 class="card-title">Consulta de DNI</h3>
+                        </div>
+                        <div class="card-body">
+                            <form id="frmConsultar" autocomplete="off">
+                                @csrf
+                                <div class="form-group mb-3">
+                                    <label for="nuDniConsulta">DNI a Consultar:</label>
+                                    <input type="text" id="nuDniConsulta" name="nuDniConsulta" class="form-control" required pattern="\d{8}" title="El DNI debe tener 8 dígitos">
+                                </div>
+                                <button type="submit" class="btn btn-success mt-2" style="width: 100%;">Consultar</button>
+                            </form>
+                            <div id="resultadoConsulta" class="mt-3"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+@section('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Alternar visibilidad de contraseñas (manteniendo tu lógica)
+    document.querySelectorAll('.toggle-password').forEach(button => {
+        button.addEventListener('click', function() {
+            const target = document.getElementById(this.dataset.target);
+            const icon = this.querySelector('i');
+            if (target.type === 'password') {
+                target.type = 'text';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            } else {
+                target.type = 'password';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            }
+        });
+    });
+
+    // Formulario para actualizar credencial
+    document.getElementById('frmActualizar').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const resultado = document.getElementById('resultadoActualizar');
+        resultado.innerHTML = '';
+
+        fetch("{{ route('reniec.actualizar') }}", {
+            method: 'POST',
+            body: new FormData(this),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.data?.coResultado === '0000') {
+                resultado.innerHTML = `<div class="alert alert-success">¡Credencial actualizada con éxito!</div>`;
+            } else if (data.data?.coResultado) {
+                resultado.innerHTML = `<div class="alert alert-warning">[${data.data.coResultado}] ${data.data.deResultado || 'Error desconocido'}</div>`;
+            } else {
+                resultado.innerHTML = `<div class="alert alert-danger">No se encontró "coResultado" en la respuesta.</div>`;
+            }
+        })
+        .catch(error => {
+            resultado.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
+        });
+    });
+
+    // Formulario para consultar DNI (sin cambios relevantes)
+    document.getElementById('frmConsultar').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const resultado = document.getElementById('resultadoConsulta');
+        resultado.innerHTML = '';
+
+        fetch("{{ route('reniec.consultar') }}", {
+            method: 'POST',
+            body: new FormData(this),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.data?.consultarResponse?.return) {
+                const retorno = data.data.consultarResponse.return;
+                if (retorno.coResultado === "0000") {
+                    resultado.innerHTML = `<div class="alert alert-success">Consulta exitosa: ${retorno.deResultado}</div>`;
+                } else {
+                    resultado.innerHTML = `<div class="alert alert-warning">[${retorno.coResultado}] ${retorno.deResultado}</div>`;
+                }
+            } else {
+                resultado.innerHTML = `<div class="alert alert-danger">No se encontró la respuesta esperada.</div>`;
+            }
+        })
+        .catch(error => {
+            resultado.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
+        });
+    });
+});
+</script>
+@endsection
+
+
+{{-- @extends('layouts.app')
+
+@section('content')
 
 <div class="content-wrapper"><!-- AdminLTE pattern -->
   <!-- Content Header (Page header) -->
@@ -285,4 +459,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-@endsection
+@endsection --}}
