@@ -19,7 +19,7 @@
   <section class="content">
     <div class="container-fluid">
 
-      <!-- Notificaciones de éxito o error (si usas session para otras cosas) -->
+      {{-- <!-- Notificaciones de éxito o error (si usas session para otras cosas) -->
       @if (session('success'))
         <div class="alert alert-success">
           {{ session('success') }}
@@ -30,7 +30,7 @@
         <div class="alert alert-danger">
           {{ $errors->first() }}
         </div>
-      @endif
+      @endif --}}
 
       <!-- Formularios lado a lado (responsive) -->
       <div class="row" style="gap: 20px; align-items: stretch;">
