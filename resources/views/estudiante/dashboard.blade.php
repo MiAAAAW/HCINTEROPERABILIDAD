@@ -1,4 +1,3 @@
-
 @extends('layouts.app')
 
 @section('content')
@@ -20,29 +19,27 @@
     <section class="content">
         <div class="container-fluid">
 
-            <!-- Contenedor Global de Alertas -->
-            <div id="alertasGlobales" class="container-fluid mb-3">
-                @if (session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        {{ session('success') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-                    </div>
-                @endif
+            <!-- Notificaciones de éxito o error (si usas session para otras cosas) -->
+            @if (session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                </div>
+            @endif
 
-                @if ($errors->any())
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        {{ $errors->first() }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-                    </div>
-                @endif
-            </div>
+            @if ($errors->any())
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ $errors->first() }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                </div>
+            @endif
 
             <!-- Formularios lado a lado (responsive) -->
-            <div class="row custom-row">
+            <div class="row" style="gap: 20px; align-items: stretch;">
                 
                 <!-- Formulario para ACTUALIZAR CREDENCIAL -->
-                <div class="col-12 col-md-6">
-                    <div class="card h-100">
+                <div class="col-md-6"><!-- col-md-6 para 2 columnas en desktop -->
+                    <div class="card" style="min-height: 300px;">
                         <div class="card-header bg-primary text-white">
                             <h3 class="card-title">Gestionar Credenciales</h3>
                         </div>
@@ -52,40 +49,40 @@
                                 <div class="form-group mb-3 position-relative">
                                     <label for="credencialAnterior">Credencial Actual:</label>
                                     <div class="input-group">
-                                        <input type="password" id="credencialAnterior" name="credencialAnterior" class="form-control" required minlength="8" aria-describedby="credencialAnteriorHelp" title="Ingrese su credencial actual">
+                                        <input type="password" id="credencialAnterior" name="credencialAnterior" class="form-control" required minlength="8">
                                         <button type="button" class="btn btn-outline-secondary toggle-password" data-target="credencialAnterior" aria-label="Mostrar u ocultar credencial actual">
                                             <i class="bi bi-eye"></i>
                                         </button>
                                     </div>
-                                    <small id="credencialAnteriorHelp" class="form-text text-muted">Ingrese su credencial actual.</small>
                                 </div>
                                 <div class="form-group mb-3 position-relative">
                                     <label for="credencialNueva">Nueva Credencial:</label>
                                     <div class="input-group">
-                                        <input type="password" id="credencialNueva" name="credencialNueva" class="form-control" required minlength="8" aria-describedby="credencialNuevaHelp" title="La credencial debe tener al menos 8 caracteres">
+                                        <input type="password" id="credencialNueva" name="credencialNueva" class="form-control" required minlength="8">
                                         <button type="button" class="btn btn-outline-secondary toggle-password" data-target="credencialNueva" aria-label="Mostrar u ocultar nueva credencial">
                                             <i class="bi bi-eye"></i>
                                         </button>
                                     </div>
-                                    <small id="credencialNuevaHelp" class="form-text text-muted">La credencial debe tener al menos 8 caracteres.</small>
                                 </div>
                                 <div class="form-group mb-3">
-                                    <label for="nuDni">DNI del Usuario:</label>
+                                    <label for="nuDni">DNI (Usuario):</label>
                                     <input type="text" id="nuDni" name="nuDni" class="form-control" required pattern="\d{8}" title="El DNI debe tener 8 dígitos">
                                 </div>
                                 <div class="form-group mb-3">
                                     <label for="nuRuc">RUC de la Entidad:</label>
                                     <input type="text" id="nuRuc" name="nuRuc" class="form-control" required pattern="\d{11}" title="El RUC debe tener 11 dígitos">
                                 </div>
-                                <button type="submit" class="btn btn-primary mt-2 btn-full-width">Actualizar Credencial</button>
+                                <button type="submit" class="btn btn-primary mt-2" style="width: 100%;">Actualizar Credencial</button>
                             </form>
+                            <!-- Aquí mostramos el resultado de actualizar -->
+                            <div id="resultadoActualizar" class="mt-3"></div>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Formulario para CONSULTAR DNI -->
-                <div class="col-12 col-md-6">
-                    <div class="card h-100">
+                <div class="col-md-6">
+                    <div class="card" style="min-height: 300px;">
                         <div class="card-header bg-success text-white">
                             <h3 class="card-title">Consulta de DNI</h3>
                         </div>
@@ -107,14 +104,16 @@
                                 <div class="form-group mb-3 position-relative">
                                     <label for="password">Contraseña PIDE:</label>
                                     <div class="input-group">
-                                        <input type="password" id="password" name="password" class="form-control" required minlength="8" title="La contraseña debe tener al menos 8 caracteres">
+                                        <input type="password" id="password" name="password" class="form-control" required minlength="8">
                                         <button type="button" class="btn btn-outline-secondary toggle-password" data-target="password" aria-label="Mostrar u ocultar contraseña PIDE">
                                             <i class="bi bi-eye"></i>
                                         </button>
                                     </div>
                                 </div>
-                                <button type="submit" class="btn btn-success mt-2 btn-full-width">Consultar</button>
+                                <button type="submit" class="btn btn-success mt-2" style="width: 100%;">Consultar</button>
                             </form>
+                            <!-- Aquí mostramos el resultado de consulta -->
+                            <div id="resultadoConsulta" class="mt-3"></div>
                         </div>
                     </div>
                 </div>
@@ -124,15 +123,14 @@
     </section>
 </div><!-- /.content-wrapper -->
 
-@endsection
 
-@section('scripts')
 <!-- Scripts para manejar AJAX (fetch) y mostrar/ocultar contraseñas -->
+@section('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Función para mostrar alertas globales
-    function mostrarAlerta(tipo, mensaje) {
-        const contenedor = document.getElementById('alertasGlobales');
+    // Función para mostrar alertas en contenedores específicos
+    function mostrarAlerta(tipo, mensaje, contenedorId) {
+        const contenedor = document.getElementById(contenedorId);
         contenedor.innerHTML = `
             <div class="alert alert-${tipo} alert-dismissible fade show" role="alert">
                 ${mensaje}
@@ -169,11 +167,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // 1. ACTUALIZAR CREDENCIAL
     // =========================================
     const frmActualizar = document.getElementById('frmActualizar');
+    const divActualizar = document.getElementById('resultadoActualizar');
 
     frmActualizar.addEventListener('submit', function(e) {
         e.preventDefault();
-        // Limpiar alertas globales
-        document.getElementById('alertasGlobales').innerHTML = '';
+        divActualizar.innerHTML = "";
 
         let formData = new FormData(frmActualizar);
 
@@ -184,23 +182,45 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(resp => resp.json())
         .then(json => {
             console.log("Actualizar JSON:", json);
-            manejarRespuesta(json, 'actualizar');
+
+            if (json.error) {
+                // Error del servidor (excepción, etc.)
+                mostrarAlerta('danger', `<strong>Error:</strong> ${json.error}`, 'resultadoActualizar');
+                return;
+            }
+
+            // Estructura: { data: { coResultado, deResultado }, ... }
+            if (json.data && json.data.coResultado) {
+                const coRes = json.data.coResultado;
+                const deRes = json.data.deResultado || 'Sin descripción';
+
+                if (coRes === '0000') {
+                    // éxito
+                    mostrarAlerta('success', `<strong>¡Credencial actualizada con éxito!</strong><br>${deRes}`, 'resultadoActualizar');
+                } else {
+                    // Advertencia
+                    mostrarAlerta('warning', `<strong>Atención:</strong> [${coRes}] ${deRes}`, 'resultadoActualizar');
+                }
+            } else {
+                mostrarAlerta('danger', `<strong>No se encontró "coResultado" en la respuesta</strong>`, 'resultadoActualizar');
+            }
         })
         .catch(err => {
-            console.error("Error en fetch:", err);
-            mostrarAlerta('danger', 'Error de conexión. Por favor, intenta nuevamente más tarde.');
+            console.error(err);
+            mostrarAlerta('danger', `<strong>Error de conexión:</strong> ${err}`, 'resultadoActualizar');
         });
     });
+
 
     // =========================================
     // 2. CONSULTAR DNI
     // =========================================
     const frmConsultar = document.getElementById('frmConsultar');
+    const divConsulta  = document.getElementById('resultadoConsulta');
 
     frmConsultar.addEventListener('submit', function(e) {
         e.preventDefault();
-        // Limpiar alertas globales
-        document.getElementById('alertasGlobales').innerHTML = '';
+        divConsulta.innerHTML = "";
 
         let formData = new FormData(frmConsultar);
 
@@ -211,64 +231,47 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(json => {
             console.log("Consultar JSON:", json);
-            manejarRespuesta(json, 'consultar');
+            renderConsulta(json);
         })
         .catch(error => {
             console.error("Error en fetch:", error);
-            mostrarAlerta('danger', 'Error de conexión. Por favor, intenta nuevamente más tarde.');
+            mostrarAlerta('danger', `<strong>Error de conexión:</strong> ${error}`, 'resultadoConsulta');
         });
     });
 
-    // =========================================
-    // 3. Función para manejar respuestas
-    // =========================================
-    function manejarRespuesta(json, tipoFormulario) {
+    function renderConsulta(json) {
         if (json.error) {
-            mostrarAlerta('danger', `<strong>Error:</strong> ${json.error}`);
+            mostrarAlerta('danger', `<strong>Error:</strong> ${json.error}`, 'resultadoConsulta');
             return;
         }
 
-        if (tipoFormulario === 'actualizar') {
-            const coRes = json.data?.coResultado;
-            const deRes = json.data?.deResultado || 'Sin descripción';
-
-            if (coRes === '0000') {
-                mostrarAlerta('success', `¡Credencial actualizada con éxito!<br>${deRes}`);
-            } else {
-                mostrarAlerta('warning', `Atención: [${coRes}] ${deRes}`);
-            }
-        } else if (tipoFormulario === 'consultar') {
-            renderConsulta(json);
-        }
-    }
-
-    // =========================================
-    // 4. Función para renderizar la consulta
-    // =========================================
-    function renderConsulta(json) {
         if (json.data && json.data.consultarResponse) {
             const retorno = json.data.consultarResponse.return;
             if (!retorno) {
-                mostrarAlerta('danger', 'No se encontró "return" en la respuesta.');
+                mostrarAlerta('danger', `No se encontró "return" en la respuesta.`, 'resultadoConsulta');
                 return;
             }
 
-            const { coResultado, deResultado, datosPersona } = retorno;
+            const coResultado  = retorno.coResultado;
+            const deResultado  = retorno.deResultado;
+            const datosPersona = retorno.datosPersona;
 
             if (coResultado === "0000") {
+                // éxito
                 let html = `
-                    <h5>Consulta Exitosa</h5>
-                    <p><strong>Código de Resultado:</strong> ${coResultado}</p>
-                    <p><strong>Mensaje:</strong> ${deResultado}</p>
-                    <ul>
-                        <li><strong>Primer Apellido:</strong> ${datosPersona.apPrimer || 'N/A'}</li>
-                        <li><strong>Segundo Apellido:</strong> ${datosPersona.apSegundo || 'N/A'}</li>
-                        <li><strong>Nombres:</strong> ${datosPersona.prenombres || 'N/A'}</li>
-                        <li><strong>Dirección:</strong> ${datosPersona.direccion || 'N/A'}</li>
-                        <li><strong>Estado Civil:</strong> ${datosPersona.estadoCivil || 'N/A'}</li>
-                        <li><strong>Ubigeo:</strong> ${datosPersona.ubigeo || 'N/A'}</li>
-                        <li><strong>Restricción:</strong> ${datosPersona.restriccion || 'N/A'}</li>
-                    </ul>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <h5>Consulta Exitosa</h5>
+                        <p><strong>Código de Resultado:</strong> ${coResultado}</p>
+                        <p><strong>Mensaje:</strong> ${deResultado}</p>
+                        <ul>
+                            <li><strong>Primer Apellido:</strong> ${datosPersona.apPrimer || 'N/A'}</li>
+                            <li><strong>Segundo Apellido:</strong> ${datosPersona.apSegundo || 'N/A'}</li>
+                            <li><strong>Nombres:</strong> ${datosPersona.prenombres || 'N/A'}</li>
+                            <li><strong>Dirección:</strong> ${datosPersona.direccion || 'N/A'}</li>
+                            <li><strong>Estado Civil:</strong> ${datosPersona.estadoCivil || 'N/A'}</li>
+                            <li><strong>Ubigeo:</strong> ${datosPersona.ubigeo || 'N/A'}</li>
+                            <li><strong>Restricción:</strong> ${datosPersona.restriccion || 'N/A'}</li>
+                        </ul>
                 `;
 
                 if (datosPersona.fotoBase64) {
@@ -279,19 +282,23 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     `;
                 }
+                html += `
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                    </div>`;
+                
+                divConsulta.innerHTML = html;
 
-                mostrarAlerta('success', html);
             } else {
-                mostrarAlerta('warning', `Atención: [${coResultado}] ${deResultado}`);
+                // coResultado != 0000 => error
+                mostrarAlerta('warning', `<strong>Atención:</strong> [${coResultado}] ${deResultado}`, 'resultadoConsulta');
             }
         } else {
-            mostrarAlerta('danger', 'No se encontró "consultarResponse" en la respuesta.');
+            mostrarAlerta('danger', `No se encontró "consultarResponse" en la respuesta.`, 'resultadoConsulta');
         }
     }
 });
 </script>
 @endsection
-
 
 
 {{-- @extends('layouts.app')
