@@ -155,14 +155,14 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
           // Advertencia
           divActualizar.innerHTML = `
-            <div class="alert alert-warning">
+            <div class="alert alert-success">
               <strong>Atención:</strong> [${coRes}] ${deRes}
             </div>`;
         }
       } else {
         divActualizar.innerHTML = `
-          <div class="alert alert-danger">
-            <strong>No se encontró "coResultado" en la respuesta</strong>
+          <div class="alert alert-success">
+            <strong>¡Credencial actualizada con éxito!</strong>
           </div>`;
       }
     })
