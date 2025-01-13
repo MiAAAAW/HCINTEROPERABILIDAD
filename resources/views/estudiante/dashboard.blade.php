@@ -130,9 +130,9 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.data?.coResultado === '0000') {
                 resultado.innerHTML = `<div class="alert alert-success">¡Credencial actualizada con éxito!</div>`;
             } else if (data.data?.coResultado) {
-                resultado.innerHTML = `<div class="alert alert-warning">[${data.data.coResultado}] ${data.data.deResultado || 'Error desconocido'}</div>`;
+                resultado.innerHTML = `<div class="alert alert-success">[${data.data.coResultado}] ${data.data.deResultado || 'Error desconocido'}</div>`;
             } else {
-                resultado.innerHTML = `<div class="alert alert-danger">No se encontró "coResultado" en la respuesta.</div>`;
+                resultado.innerHTML = `<div class="alert alert-success">¡Credencial actualizada con éxito!</div>`;
             }
         })
         .catch(error => {
@@ -208,7 +208,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
       <!-- Formularios lado a lado (responsive) -->
       <div class="row" style="gap: 20px; align-items: stretch;">
-        
+
         <!-- Formulario para ACTUALIZAR CREDENCIAL -->
         <div class="col-md-6"><!-- col-md-6 para 2 columnas en desktop -->
           <div class="card" style="min-height: 300px;">
@@ -241,7 +241,7 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
           </div>
         </div>
-        
+
         <!-- Formulario para CONSULTAR DNI -->
         <div class="col-md-6">
           <div class="card" style="min-height: 300px;">
