@@ -312,4 +312,71 @@ document.addEventListener('DOMContentLoaded', function() {
     if (json.data && json.data.consultarResponse) {
       const retorno = json.data.consultarResponse.return;
       if (!retorno) {
-        divConsulta.innerHTML = `<div c
+        divConsulta.innerHTML = `<div class="alert alert-danger">No se encontró "return" en la respuesta.</div>`;
+        return;
+      }
+
+      const coResultado  = retorno.coResultado;
+      const deResultado  = retorno.deResultado;
+      const datosPersona = retorno.datosPersona;
+
+      if (coResultado === "0000") {
+        // éxito
+        let html = `
+          <div class="alert alert-success">
+            <h5>Consulta Exitosa</h5>
+            <p><strong>Código de Resultado:</strong> ${coResultado}</p>
+            <p><strong>Mensaje:</strong> ${deResultado}</p>
+        `;
+
+        if (datosPersona) {
+          let apPrimer    = datosPersona.apPrimer || 'N/A';
+          let apSegundo   = datosPersona.apSegundo || 'N/A';
+          let prenombres  = datosPersona.prenombres || 'N/A';
+          let direccion   = datosPersona.direccion || 'N/A';
+          let estadoCivil = datosPersona.estadoCivil || 'N/A';
+          let restriccion = datosPersona.restriccion || 'N/A';
+          let ubigeo      = datosPersona.ubigeo || 'N/A';
+          let fotoBase64  = datosPersona.foto || '';
+
+          html += `
+            <ul>
+              <li><strong>Primer Apellido:</strong> ${apPrimer}</li>
+              <li><strong>Segundo Apellido:</strong> ${apSegundo}</li>
+              <li><strong>Nombres:</strong> ${prenombres}</li>
+              <li><strong>Dirección:</strong> ${direccion}</li>
+              <li><strong>Estado Civil:</strong> ${estadoCivil}</li>
+              <li><strong>Ubigeo:</strong> ${ubigeo}</li>
+              <li><strong>Restricción:</strong> ${restriccion}</li>
+            </ul>
+          `;
+
+          if (fotoBase64) {
+            html += `
+              <div>
+                <strong>Foto:</strong><br>
+                <img src="data:image/jpeg;base64,${fotoBase64}" alt="Foto del DNI" style="max-width: 200px;">
+              </div>
+            `;
+          }
+          html += `</div>`;
+        }
+        divConsulta.innerHTML = html;
+
+      } else {
+        // coResultado != 0000 => advertencia / error
+        divConsulta.innerHTML = `
+          <div class="alert alert-warning">
+            <strong>Atención:</strong> [${coResultado}] ${deResultado}
+          </div>`;
+      }
+    } else {
+      divConsulta.innerHTML = `
+        <div class="alert alert-danger">
+          No se encontró "consultarResponse" en la respuesta.
+        </div>`;
+    }
+  }
+});
+</script>
+@endsection
