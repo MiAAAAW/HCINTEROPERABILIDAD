@@ -1,11 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
-
-<div class="content-wrapper"><!-- Estructura de AdminLTE -->
+<div class="content-wrapper"><!-- AdminLTE pattern -->
   <!-- Content Header (Page header) -->
   <div class="content-header">
-    <div class="container"><!-- O usa "container-fluid" si deseas ancho completo -->
+    <div class="container"><!-- O usa "container-fluid" si prefieres ancho completo -->
       <div class="row mb-2">
         <div class="col-sm-12">
           <h1 class="m-0">Consulta y Actualización de Credenciales (RENIEC - PIDE)</h1>
@@ -18,7 +17,6 @@
   <!-- Main content -->
   <section class="content">
     <div class="container"><!-- O "container-fluid" si prefieres full width -->
-
       <!-- Notificaciones de éxito o error (si usas session para otras cosas) -->
       @if (session('success'))
         <div class="alert alert-success">
@@ -35,7 +33,7 @@
       <!-- Formularios lado a lado (responsive) -->
       <div class="row" style="gap: 20px; align-items: stretch;">
         <!-- Formulario para ACTUALIZAR CREDENCIAL -->
-        <div class="col-md-6"><!-- col-md-6 = 2 columnas en desktop -->
+        <div class="col-md-6"><!-- col-md-6 = 2 columnas en pantallas grandes -->
           <div class="card" style="min-height: 300px;">
             <div class="card-header bg-primary text-white">
               <h3 class="card-title">Gestionar Credenciales</h3>
@@ -61,7 +59,6 @@
                 </div>
                 <button type="submit" class="btn btn-primary mt-2 w-100">Actualizar Credencial</button>
               </form>
-
               <!-- Aquí mostramos el resultado de actualizar -->
               <div id="resultadoActualizar" class="mt-3"></div>
             </div>
@@ -95,21 +92,19 @@
                 </div>
                 <button type="submit" class="btn btn-success mt-2 w-100">Consultar</button>
               </form>
-
               <!-- Aquí mostramos el resultado de consulta -->
               <div id="resultadoConsulta" class="mt-3"></div>
             </div>
           </div>
         </div>
       </div><!-- /.row -->
-
     </div><!-- /.container -->
   </section>
   <!-- /.content -->
 </div><!-- /.content-wrapper -->
+@endsection
 
-
-<!-- Scripts para manejar AJAX (fetch) -->
+<!-- Scripts Adicionales para tu Página -->
 @section('script')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -134,7 +129,7 @@ document.addEventListener('DOMContentLoaded', function() {
       console.log("Actualizar JSON:", json);
 
       if (json.error) {
-        // Error del servidor (excepción, etc.)
+        // Error del servidor
         divActualizar.innerHTML = `
           <div class="alert alert-danger">
             <strong>Error:</strong> ${json.error}
@@ -176,7 +171,6 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>`;
     });
   });
-
 
   // =========================================
   // 2. CONSULTAR DNI
@@ -267,12 +261,12 @@ document.addEventListener('DOMContentLoaded', function() {
               </div>
             `;
           }
-          html += `</div>`; // cierra alert-success
+          html += `</div>`;
         }
         divConsulta.innerHTML = html;
 
       } else {
-        // coResultado != 0000 => error
+        // coResultado != 0000 => Error o Advertencia
         divConsulta.innerHTML = `
           <div class="alert alert-warning">
             <strong>Atención:</strong> [${coResultado}] ${deResultado}
