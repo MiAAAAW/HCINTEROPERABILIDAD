@@ -18,7 +18,7 @@
   <section class="content">
     <div class="container"><!-- o "container-fluid" -->
 
-      <!-- Notificaciones de éxito o error (si usas session) -->
+      <!-- Notificaciones de éxito o error (session) -->
       @if (session('success'))
         <div class="alert alert-success">
           {{ session('success') }}
@@ -34,8 +34,10 @@
       <!-- Formularios lado a lado (responsive) -->
       <div class="row" style="gap: 20px; align-items: stretch;">
 
-        <!-- Formulario para ACTUALIZAR CREDENCIAL -->
-        <div class="col-md-6"><!-- col-md-6 para 2 columnas en desktop -->
+        <!-- ================================
+             1. Formulario para ACTUALIZAR
+           ================================ -->
+        <div class="col-md-6">
           <div class="card" style="min-height: 300px;">
             <div class="card-header bg-primary text-white">
               <h3 class="card-title">Gestionar Credenciales</h3>
@@ -73,7 +75,6 @@
                     required
                     minlength="8"
                   >
-                  <!-- Ícono de ojo -->
                   <i
                     class="fas fa-eye"
                     id="toggleCredNueva"
@@ -81,14 +82,15 @@
                   </i>
                 </div>
 
+                <!-- DNI -->
                 <div class="form-group">
                   <label for="nuDni">DNI (Usuario):</label>
                   <input type="text" id="nuDni" name="nuDni" class="form-control" required>
                 </div>
 
+                <!-- RUC (pre-llenado) -->
                 <div class="form-group">
                   <label for="nuRuc">RUC de la Entidad:</label>
-                  <!-- Pre-llenado con 20181438364 -->
                   <input
                     type="text"
                     id="nuRuc"
@@ -102,13 +104,15 @@
                 <button type="submit" class="btn btn-primary mt-2 w-100">Actualizar Credencial</button>
               </form>
 
-              <!-- Aquí mostramos el resultado de actualizar -->
+              <!-- Resultado de actualizar -->
               <div id="resultadoActualizar" class="mt-3"></div>
             </div>
           </div>
         </div>
 
-        <!-- Formulario para CONSULTAR DNI -->
+        <!-- ============================
+             2. Formulario para CONSULTAR
+           ============================ -->
         <div class="col-md-6">
           <div class="card" style="min-height: 300px;">
             <div class="card-header bg-success text-white">
@@ -130,7 +134,6 @@
 
                 <div class="form-group">
                   <label for="nuRucUsuario">RUC de la Entidad:</label>
-                  <!-- Pre-llenado con 20181438364 -->
                   <input
                     type="text"
                     id="nuRucUsuario"
@@ -141,7 +144,7 @@
                   >
                 </div>
 
-                <!-- Contraseña PIDE -->
+                <!-- Contraseña PIDE (mostrar/ocultar) -->
                 <div class="form-group" style="position: relative;">
                   <label for="password">Contraseña PIDE:</label>
                   <input
@@ -151,7 +154,6 @@
                     class="form-control"
                     required
                   >
-                  <!-- Ícono de ojo -->
                   <i
                     class="fas fa-eye"
                     id="togglePasswordPIDE"
@@ -162,7 +164,7 @@
                 <button type="submit" class="btn btn-success mt-2 w-100">Consultar</button>
               </form>
 
-              <!-- Aquí mostramos el resultado de consulta -->
+              <!-- Resultado de consulta -->
               <div id="resultadoConsulta" class="mt-3"></div>
             </div>
           </div>
@@ -178,7 +180,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   // ========================================================
-  // 1. Mostrar/Ocultar Contraseñas
+  // 0. Mostrar/Ocultar Contraseñas
   // ========================================================
   const toggles = [
     { inputId: 'credencialAnterior', iconId: 'toggleCredAnterior' },
@@ -194,7 +196,6 @@ document.addEventListener('DOMContentLoaded', function() {
       iconToggle.addEventListener('click', function() {
         const isPassword = inputField.getAttribute('type') === 'password';
         inputField.setAttribute('type', isPassword ? 'text' : 'password');
-
         // Cambia el ícono (fa-eye <-> fa-eye-slash)
         this.classList.toggle('fa-eye');
         this.classList.toggle('fa-eye-slash');
@@ -202,9 +203,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-
   // ========================================================
-  // 2. ACTUALIZAR CREDENCIAL
+  // 1. ACTUALIZAR CREDENCIAL
   // ========================================================
   const frmActualizar = document.getElementById('frmActualizar');
   const divActualizar = document.getElementById('resultadoActualizar');
@@ -213,7 +213,7 @@ document.addEventListener('DOMContentLoaded', function() {
     e.preventDefault();
     divActualizar.innerHTML = "";
 
-    let formData = new FormData(frmActualizar);
+    const formData = new FormData(frmActualizar);
 
     fetch("{{ route('reniec.actualizar') }}", {
       method: 'POST',
@@ -232,29 +232,31 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
       }
 
-      // Estructura: { data: { coResultado, deResultado }, ... }
+      // Verificamos si PIDE devolvió coResultado
       if (json.data && json.data.coResultado) {
         const coRes = json.data.coResultado;
         const deRes = json.data.deResultado || 'Sin descripción';
 
+        // Si es '0000' => Éxito
         if (coRes === '0000') {
-          // éxito
           divActualizar.innerHTML = `
             <div class="alert alert-success">
               <strong>¡Credencial actualizada con éxito!</strong><br>
               ${deRes}
             </div>`;
         } else {
-          // Advertencia
+          // Cualquier otro coResultado => Error
           divActualizar.innerHTML = `
-            <div class="alert alert-success">
-              <strong>Atención:</strong> [${coRes}] ${deRes}
+            <div class="alert alert-danger">
+              <strong>Error:</strong> La credencial no pudo actualizarse.<br>
+              ${deRes || 'Ingrese correctamente los datos.'}
             </div>`;
         }
       } else {
+        // Caso en que no hay coResultado
         divActualizar.innerHTML = `
-          <div class="alert alert-success">
-            <strong>¡Credencial actualizada con éxito!</strong>
+          <div class="alert alert-danger">
+            <strong>Error:</strong> No se recibió 'coResultado' en la respuesta. Verifique el servidor.
           </div>`;
       }
     })
@@ -267,9 +269,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-
   // ========================================================
-  // 3. CONSULTAR DNI
+  // 2. CONSULTAR DNI
   // ========================================================
   const frmConsultar = document.getElementById('frmConsultar');
   const divConsulta  = document.getElementById('resultadoConsulta');
@@ -278,7 +279,7 @@ document.addEventListener('DOMContentLoaded', function() {
     e.preventDefault();
     divConsulta.innerHTML = "";
 
-    let formData = new FormData(frmConsultar);
+    const formData = new FormData(frmConsultar);
 
     fetch("{{ route('reniec.consultar') }}", {
       method: 'POST',
@@ -307,74 +308,8 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
 
+    // Revisamos si PIDE trae consultarResponse
     if (json.data && json.data.consultarResponse) {
       const retorno = json.data.consultarResponse.return;
       if (!retorno) {
-        divConsulta.innerHTML = `<div class="alert alert-danger">No se encontró "return" en la respuesta.</div>`;
-        return;
-      }
-
-      const coResultado  = retorno.coResultado;
-      const deResultado  = retorno.deResultado;
-      const datosPersona = retorno.datosPersona;
-
-      if (coResultado === "0000") {
-        // éxito
-        let html = `
-          <div class="alert alert-success">
-            <h5>Consulta Exitosa</h5>
-            <p><strong>Código de Resultado:</strong> ${coResultado}</p>
-            <p><strong>Mensaje:</strong> ${deResultado}</p>
-        `;
-
-        if (datosPersona) {
-          let apPrimer    = datosPersona.apPrimer || 'N/A';
-          let apSegundo   = datosPersona.apSegundo || 'N/A';
-          let prenombres  = datosPersona.prenombres || 'N/A';
-          let direccion   = datosPersona.direccion || 'N/A';
-          let estadoCivil = datosPersona.estadoCivil || 'N/A';
-          let restriccion = datosPersona.restriccion || 'N/A';
-          let ubigeo      = datosPersona.ubigeo || 'N/A';
-          let fotoBase64  = datosPersona.foto || '';
-
-          html += `
-            <ul>
-              <li><strong>Primer Apellido:</strong> ${apPrimer}</li>
-              <li><strong>Segundo Apellido:</strong> ${apSegundo}</li>
-              <li><strong>Nombres:</strong> ${prenombres}</li>
-              <li><strong>Dirección:</strong> ${direccion}</li>
-              <li><strong>Estado Civil:</strong> ${estadoCivil}</li>
-              <li><strong>Ubigeo:</strong> ${ubigeo}</li>
-              <li><strong>Restricción:</strong> ${restriccion}</li>
-            </ul>
-          `;
-
-          if (fotoBase64) {
-            html += `
-              <div>
-                <strong>Foto:</strong><br>
-                <img src="data:image/jpeg;base64,${fotoBase64}" alt="Foto del DNI" style="max-width: 200px;">
-              </div>
-            `;
-          }
-          html += `</div>`; // cierra alert-success
-        }
-        divConsulta.innerHTML = html;
-
-      } else {
-        // coResultado != 0000 => error/advertencia
-        divConsulta.innerHTML = `
-          <div class="alert alert-warning">
-            <strong>Atención:</strong> [${coResultado}] ${deResultado}
-          </div>`;
-      }
-    } else {
-      divConsulta.innerHTML = `
-        <div class="alert alert-danger">
-          No se encontró "consultarResponse" en la respuesta.
-        </div>`;
-    }
-  }
-});
-</script>
-@endsection
+        divConsulta.innerHTML = `<div c
