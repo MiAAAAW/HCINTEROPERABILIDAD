@@ -117,21 +117,16 @@
     </section>
 </div>
 
+
 @section('script')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // =======================================
     // A) Mostrar/Ocultar Contraseñas
     // =======================================
-    const toggles = [
-        { inputId: 'credencialAnterior', iconId: 'toggleCredAnterior' },
-        { inputId: 'credencialNueva', iconId: 'toggleCredNueva' },
-        { inputId: 'password', iconId: 'togglePasswordPIDE' }
-    ];
-
-    toggles.forEach(item => {
-        const inputField = document.getElementById(item.inputId);
-        const iconToggle = document.getElementById(item.iconId);
+    const togglePasswordVisibility = (inputId, iconId) => {
+        const inputField = document.getElementById(inputId);
+        const iconToggle = document.getElementById(iconId);
 
         if (inputField && iconToggle) {
             iconToggle.addEventListener('click', function() {
@@ -142,10 +137,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.classList.toggle('fa-eye-slash');
             });
         }
-    });
+    };
+
+    togglePasswordVisibility('credencialAnterior', 'toggleCredAnterior');
+    togglePasswordVisibility('credencialNueva', 'toggleCredNueva');
+    togglePasswordVisibility('password', 'togglePasswordPIDE');
 
     // =======================================
-    // B) ACTUALIZAR CREDENCIAL
+    // B) Manejar el formulario de "Actualizar Credencial"
     // =======================================
     const frmActualizar = document.getElementById('frmActualizar');
     const divActualizar = document.getElementById('resultadoActualizar');
@@ -164,7 +163,10 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(resp => resp.json())
             .then(json => {
                 if (json.error) {
-                    divActualizar.innerHTML = `<div class="alert alert-danger"><strong>Error:</strong> ${json.error}</div>`;
+                    divActualizar.innerHTML = `
+                        <div class="alert alert-danger">
+                            <strong>Error:</strong> ${json.error}
+                        </div>`;
                     return;
                 }
 
@@ -173,20 +175,30 @@ document.addEventListener('DOMContentLoaded', function() {
                     const deRes = json.data.deResultado || 'Sin descripción';
 
                     divActualizar.innerHTML = coRes === '0000'
-                        ? `<div class="alert alert-success"><strong>¡Credencial actualizada con éxito!</strong><br>${deRes}</div>`
-                        : `<div class="alert alert-danger"><strong>Error [${coRes}]:</strong> ${deRes}</div>`;
+                        ? `<div class="alert alert-success">
+                              <strong>¡Credencial actualizada con éxito!</strong><br>${deRes}
+                           </div>`
+                        : `<div class="alert alert-danger">
+                              <strong>Error [${coRes}]:</strong> ${deRes}
+                           </div>`;
                 } else {
-                    divActualizar.innerHTML = `<div class="alert alert-danger"><strong>Error:</strong> No se recibió "coResultado" en la respuesta.</div>`;
+                    divActualizar.innerHTML = `
+                        <div class="alert alert-danger">
+                            <strong>Error:</strong> No se recibió "coResultado" en la respuesta.
+                        </div>`;
                 }
             })
             .catch(err => {
-                divActualizar.innerHTML = `<div class="alert alert-danger"><strong>Error de conexión:</strong> ${err}</div>`;
+                divActualizar.innerHTML = `
+                    <div class="alert alert-danger">
+                        <strong>Error de conexión:</strong> ${err}
+                    </div>`;
             });
         });
     }
 
     // =======================================
-    // C) CONSULTAR DNI
+    // C) Manejar el formulario de "Consultar DNI"
     // =======================================
     const frmConsultar = document.getElementById('frmConsultar');
     const divConsulta = document.getElementById('resultadoConsulta');
@@ -205,14 +217,20 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(json => {
                 if (json.error) {
-                    divConsulta.innerHTML = `<div class="alert alert-danger"><strong>Error:</strong> ${json.error}</div>`;
+                    divConsulta.innerHTML = `
+                        <div class="alert alert-danger">
+                            <strong>Error:</strong> ${json.error}
+                        </div>`;
                     return;
                 }
 
                 if (json.data && json.data.consultarResponse) {
                     const retorno = json.data.consultarResponse.return;
                     if (!retorno) {
-                        divConsulta.innerHTML = `<div class="alert alert-danger">No se encontró "return" en la respuesta.</div>`;
+                        divConsulta.innerHTML = `
+                            <div class="alert alert-danger">
+                                No se encontró "return" en la respuesta.
+                            </div>`;
                         return;
                     }
 
@@ -244,31 +262,42 @@ document.addEventListener('DOMContentLoaded', function() {
 
                         divConsulta.innerHTML = html + '</div>';
                     } else {
-                        divConsulta.innerHTML = `<div class="alert alert-warning"><strong>Atención [${coResultado}]:</strong> ${deResultado}</div>`;
+                        divConsulta.innerHTML = `
+                            <div class="alert alert-warning">
+                                <strong>Atención [${coResultado}]:</strong> ${deResultado}
+                            </div>`;
                     }
                 } else {
-                    divConsulta.innerHTML = `<div class="alert alert-danger">No se encontró "consultarResponse" en la respuesta.</div>`;
+                    divConsulta.innerHTML = `
+                        <div class="alert alert-danger">
+                            No se encontró "consultarResponse" en la respuesta.
+                        </div>`;
                 }
             })
             .catch(error => {
-                divConsulta.innerHTML = `<div class="alert alert-danger"><strong>Error de conexión:</strong> ${error}</div>`;
+                divConsulta.innerHTML = `
+                    <div class="alert alert-danger">
+                        <strong>Error de conexión:</strong> ${error}
+                    </div>`;
             });
         });
     }
 
     // =======================================
-    // D) COLAPSAR Y EXPANDIR CARDS
+    // D) Colapsar y Expandir Cards
     // =======================================
     window.toggleCollapse = function(collapseId, iconId) {
         const collapse = document.getElementById(collapseId);
         const icon = document.getElementById(iconId);
 
-        if (collapse.classList.contains('show')) {
-            collapse.classList.remove('show');
-            icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
-        } else {
-            collapse.classList.add('show');
-            icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+        if (collapse && icon) {
+            if (collapse.classList.contains('show')) {
+                collapse.classList.remove('show');
+                icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+            } else {
+                collapse.classList.add('show');
+                icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+            }
         }
     };
 });
