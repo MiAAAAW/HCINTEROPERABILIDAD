@@ -33,7 +33,7 @@ class ReniecController extends Controller
 
         // 3. Instanciar el cliente Guzzle
         $client = new Client([
-            'base_uri' => env('PIDE_BASE_URL') // "https://ws2.pide.gob.pe/Rest/RENIEC"
+            'base_uri' => env('PIDE_BASE_URL') // Por ej: "https://ws2.pide.gob.pe/Rest/RENIEC/"
         ]);
 
         try {
@@ -50,12 +50,39 @@ class ReniecController extends Controller
             $responseBody = $response->getBody()->getContents();  // Texto JSON
             $jsonData     = json_decode($responseBody, true);
 
-            // 6. Retornar la respuesta (JSON). 
-            //    Podrías también redirigir con session si prefieres.
+            /**
+             * Estructura típica devuelta por PIDE (ejemplo):
+             * {
+             *   "coResultado": "0000",
+             *   "deResultado": "Actualización realizada correctamente"
+             * }
+             *
+             * A veces puede variar, pero normalmente "coResultado" y "deResultado"
+             * están en la raíz del JSON.
+             */
+
+            // Extraemos coResultado y deResultado
+            $coResultado = $jsonData['coResultado'] ?? null;
+            $deResultado = $jsonData['deResultado'] ?? null;
+
+            /**
+             * Si deseas usar un status HTTP 200 siempre, basta con hacer:
+             *   $finalStatus = 200;
+             *
+             * Pero si quieres marcar un error cuando coResultado != '0000', podrías hacer:
+             */
+            $finalStatus = ($coResultado === '0000') ? 200 : 400;
+
+            // 6. Retornar la respuesta con la ESTRUCTURA unificada
             return response()->json([
-                'status_code' => $statusCode,
-                'data'        => $jsonData
-            ], 200);
+                'status_code' => $finalStatus,
+                'data'        => [
+                    'coResultado' => $coResultado,
+                    'deResultado' => $deResultado,
+                ],
+                // Si deseas ver la respuesta completa que vino de PIDE, podrías incluirla aquí:
+                // 'raw_pide'     => $jsonData,
+            ], $finalStatus);
 
         } catch (\Exception $e) {
             // Manejo de excepciones (errores de red, timeouts, etc.)
@@ -108,11 +135,48 @@ class ReniecController extends Controller
             $responseBody = $response->getBody()->getContents();
             $jsonData     = json_decode($responseBody, true);
 
-            // 6. Devolver el resultado
+            /**
+             * Estructura típica de la respuesta de PIDE en Consultar:
+             * {
+             *   "consultarResponse": {
+             *     "return": {
+             *       "coResultado": "0000",
+             *       "deResultado": "Consulta realizada correctamente",
+             *       "datosPersona": {
+             *           "apPrimer": "...",
+             *           "apSegundo": "...",
+             *           ...
+             *       }
+             *     }
+             *   }
+             * }
+             *
+             * coResultado suele estar dentro de "consultarResponse.return.coResultado"
+             */
+
+            // Extraemos coResultado y deResultado (si existen)
+            $coResultado = null;
+            $deResultado = null;
+            if (isset($jsonData['consultarResponse']['return'])) {
+                $retorno     = $jsonData['consultarResponse']['return'];
+                $coResultado = $retorno['coResultado'] ?? null;
+                $deResultado = $retorno['deResultado'] ?? null;
+            }
+
+            // Podrías decidir tu status final:
+            $finalStatus = ($coResultado === '0000') ? 200 : 400;
+
+            // 6. Devolver la respuesta, anidando coResultado y deResultado en 'data'
             return response()->json([
-                'status_code' => $statusCode,
-                'data'        => $jsonData
-            ], 200);
+                'status_code' => $finalStatus,
+                'data'        => [
+                    'coResultado'       => $coResultado,
+                    'deResultado'       => $deResultado,
+                    // Incluimos toda la estructura 'consultarResponse' para que el front la use
+                    'consultarResponse' => $jsonData['consultarResponse'] ?? null,
+                ],
+                // 'raw_pide' => $jsonData, // si quieres ver la respuesta cruda
+            ], $finalStatus);
 
         } catch (\Exception $e) {
             return response()->json([
