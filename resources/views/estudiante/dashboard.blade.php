@@ -41,14 +41,15 @@
         <div class="col-md-6">
           <div class="card" style="min-height: 300px;">
 
-            <!-- Card Header se vuelve un "toggler" para colapsar -->
-            <div class="card-header bg-primary text-white"
-                 data-toggle="collapse"
-                 data-target="#collapseActualizar"
+            <!-- Card Header con flecha dinámica -->
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center"
+                 data-bs-toggle="collapse"
+                 data-bs-target="#collapseActualizar"
                  aria-expanded="true"
                  aria-controls="collapseActualizar"
                  style="cursor: pointer;">
-              <h3 class="card-title">Gestionar Credenciales</h3>
+              <h3 class="card-title mb-0">Gestionar Credenciales</h3>
+              <i class="fas fa-chevron-up collapse-icon" id="iconActualizar"></i>
             </div>
 
             <!-- Contenedor colapsable -->
@@ -104,7 +105,7 @@
                     >
                   </div>
 
-                  <!-- RUC (pre-llenado) -->
+                  <!-- RUC -->
                   <div class="form-group">
                     <label for="nuRuc">RUC de la Entidad:</label>
                     <input
@@ -125,11 +126,11 @@
                   </button>
                 </form>
 
-                <!-- Resultado de actualizar (solo 1 contenedor de alertas) -->
+                <!-- Resultado de actualizar -->
                 <div id="resultadoActualizar" class="mt-3"></div>
-              </div> <!-- card-body -->
-            </div> <!-- #collapseActualizar -->
-          </div> <!-- .card -->
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- ============================
@@ -138,14 +139,15 @@
         <div class="col-md-6">
           <div class="card" style="min-height: 300px;">
 
-            <!-- Card Header como "toggler" -->
-            <div class="card-header bg-success text-white"
-                 data-toggle="collapse"
-                 data-target="#collapseConsultar"
+            <!-- Card Header con flecha dinámica -->
+            <div class="card-header bg-success text-white d-flex justify-content-between align-items-center"
+                 data-bs-toggle="collapse"
+                 data-bs-target="#collapseConsultar"
                  aria-expanded="true"
                  aria-controls="collapseConsultar"
                  style="cursor: pointer;">
-              <h3 class="card-title">Consulta de DNI</h3>
+              <h3 class="card-title mb-0">Consulta de DNI</h3>
+              <i class="fas fa-chevron-up collapse-icon" id="iconConsultar"></i>
             </div>
 
             <!-- Contenedor colapsable -->
@@ -153,6 +155,7 @@
               <div class="card-body">
                 <form id="frmConsultar" onsubmit="return false;">
                   @csrf
+
                   <div class="form-group">
                     <label for="nuDniConsulta">DNI a Consultar:</label>
                     <input
@@ -211,220 +214,40 @@
                   </button>
                 </form>
 
-                <!-- Resultado de consulta (solo 1 contenedor de alertas) -->
+                <!-- Resultado de consulta -->
                 <div id="resultadoConsulta" class="mt-3"></div>
-              </div> <!-- card-body -->
-            </div> <!-- #collapseConsultar -->
-          </div> <!-- .card -->
+              </div>
+            </div>
+          </div>
         </div>
 
       </div><!-- /.row -->
     </div><!-- /.container -->
   </section>
-</div><!-- /.content-wrapper -->
+</div>
 @endsection
 
 @section('script')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // =======================================
-  // A) Mostrar/Ocultar Contraseñas
-  // =======================================
-  const toggles = [
-    { inputId: 'credencialAnterior', iconId: 'toggleCredAnterior' },
-    { inputId: 'credencialNueva',    iconId: 'toggleCredNueva' },
-    { inputId: 'password',           iconId: 'togglePasswordPIDE' }
-  ];
+  // Flechas dinámicas para collapse
+  const toggleCollapseIcon = (collapseId, iconId) => {
+    const collapseElement = document.getElementById(collapseId);
+    const iconElement = document.getElementById(iconId);
 
-  toggles.forEach(item => {
-    const inputField = document.getElementById(item.inputId);
-    const iconToggle = document.getElementById(item.iconId);
-
-    if (inputField && iconToggle) {
-      iconToggle.addEventListener('click', function() {
-        const isPassword = (inputField.type === 'password');
-        inputField.type = isPassword ? 'text' : 'password';
-        // Cambiar ícono (fa-eye <-> fa-eye-slash)
-        this.classList.toggle('fa-eye');
-        this.classList.toggle('fa-eye-slash');
-      });
-    }
-  });
-
-
-  // =======================================
-  // B) ACTUALIZAR CREDENCIAL
-  // =======================================
-  const frmActualizar = document.getElementById('frmActualizar');
-  const divActualizar = document.getElementById('resultadoActualizar');
-
-  frmActualizar.addEventListener('submit', function(e) {
-    e.preventDefault();
-    divActualizar.innerHTML = "";
-
-    const formData = new FormData(frmActualizar);
-
-    fetch("{{ route('reniec.actualizar') }}", {
-      method: 'POST',
-      body: formData
-    })
-    .then(resp => resp.json())
-    .then(json => {
-      console.log("Actualizar JSON:", json);
-
-      if (json.error) {
-        divActualizar.innerHTML = `
-          <div class="alert alert-danger">
-            <strong>Error:</strong> ${json.error}
-          </div>`;
-        return;
-      }
-
-      if (json.data && json.data.coResultado) {
-        const coRes = json.data.coResultado;
-        const deRes = json.data.deResultado || 'Sin descripción';
-
-        if (coRes === '0000') {
-          // Éxito
-          divActualizar.innerHTML = `
-            <div class="alert alert-success">
-              <strong>¡Credencial actualizada con éxito!</strong><br>
-              ${deRes}
-            </div>`;
-        } else {
-          // Error
-          divActualizar.innerHTML = `
-            <div class="alert alert-danger">
-              <strong>Error [${coRes}]:</strong> ${deRes}
-            </div>`;
-        }
-      } else {
-        divActualizar.innerHTML = `
-          <div class="alert alert-danger">
-            <strong>Error:</strong> No se recibió "coResultado" en la respuesta.
-          </div>`;
-      }
-    })
-    .catch(err => {
-      console.error(err);
-      divActualizar.innerHTML = `
-        <div class="alert alert-danger">
-          <strong>Error de conexión:</strong> ${err}
-        </div>`;
+    collapseElement.addEventListener('show.bs.collapse', () => {
+      iconElement.classList.remove('fa-chevron-down');
+      iconElement.classList.add('fa-chevron-up');
     });
-  });
 
-
-  // =======================================
-  // C) CONSULTAR DNI
-  // =======================================
-  const frmConsultar = document.getElementById('frmConsultar');
-  const divConsulta  = document.getElementById('resultadoConsulta');
-
-  frmConsultar.addEventListener('submit', function(e) {
-    e.preventDefault();
-    divConsulta.innerHTML = "";
-
-    const formData = new FormData(frmConsultar);
-
-    fetch("{{ route('reniec.consultar') }}", {
-      method: 'POST',
-      body: formData
-    })
-    .then(response => response.json())
-    .then(json => {
-      console.log("Consultar JSON:", json);
-
-      if (json.error) {
-        divConsulta.innerHTML = `
-          <div class="alert alert-danger">
-            <strong>Error:</strong> ${json.error}
-          </div>`;
-        return;
-      }
-
-      // Revisamos si PIDE trae consultarResponse
-      if (json.data && json.data.consultarResponse) {
-        const retorno = json.data.consultarResponse.return;
-        if (!retorno) {
-          divConsulta.innerHTML = `
-            <div class="alert alert-danger">
-              No se encontró "return" en la respuesta.
-            </div>`;
-          return;
-        }
-
-        const coResultado  = retorno.coResultado;
-        const deResultado  = retorno.deResultado;
-        const datosPersona = retorno.datosPersona;
-
-        if (coResultado === "0000") {
-          // Éxito
-          let html = `
-            <div class="alert alert-success">
-              <h5>Consulta Exitosa</h5>
-              <p><strong>Código de Resultado:</strong> ${coResultado}</p>
-              <p><strong>Mensaje:</strong> ${deResultado}</p>
-          `;
-
-          if (datosPersona) {
-            let apPrimer    = datosPersona.apPrimer || 'N/A';
-            let apSegundo   = datosPersona.apSegundo || 'N/A';
-            let prenombres  = datosPersona.prenombres || 'N/A';
-            let direccion   = datosPersona.direccion || 'N/A';
-            let estadoCivil = datosPersona.estadoCivil || 'N/A';
-            let restriccion = datosPersona.restriccion || 'N/A';
-            let ubigeo      = datosPersona.ubigeo || 'N/A';
-            let fotoBase64  = datosPersona.foto || '';
-
-            html += `
-              <ul>
-                <li><strong>Primer Apellido:</strong> ${apPrimer}</li>
-                <li><strong>Segundo Apellido:</strong> ${apSegundo}</li>
-                <li><strong>Nombres:</strong> ${prenombres}</li>
-                <li><strong>Dirección:</strong> ${direccion}</li>
-                <li><strong>Estado Civil:</strong> ${estadoCivil}</li>
-                <li><strong>Ubigeo:</strong> ${ubigeo}</li>
-                <li><strong>Restricción:</strong> ${restriccion}</li>
-              </ul>
-            `;
-
-            if (fotoBase64) {
-              html += `
-                <div>
-                  <strong>Foto:</strong><br>
-                  <img src="data:image/jpeg;base64,${fotoBase64}" alt="Foto del DNI" style="max-width: 200px;">
-                </div>
-              `;
-            }
-            html += `</div>`; // cierra alert-success
-          }
-          divConsulta.innerHTML = html;
-
-        } else {
-          // coResultado != 0000 => error
-          divConsulta.innerHTML = `
-            <div class="alert alert-warning">
-              <strong>Atención [${coResultado}]:</strong> ${deResultado}
-            </div>`;
-        }
-      } else {
-        divConsulta.innerHTML = `
-          <div class="alert alert-danger">
-            No se encontró "consultarResponse" en la respuesta.
-          </div>`;
-      }
-    })
-    .catch(error => {
-      console.error(error);
-      divConsulta.innerHTML = `
-        <div class="alert alert-danger">
-          <strong>Error de conexión:</strong> ${error}
-        </div>`;
+    collapseElement.addEventListener('hide.bs.collapse', () => {
+      iconElement.classList.remove('fa-chevron-up');
+      iconElement.classList.add('fa-chevron-down');
     });
-  });
+  };
 
+  toggleCollapseIcon('collapseActualizar', 'iconActualizar');
+  toggleCollapseIcon('collapseConsultar', 'iconConsultar');
 });
 </script>
 @endsection
-
