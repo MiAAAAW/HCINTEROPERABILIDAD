@@ -4,7 +4,7 @@
 <div class="content-wrapper"><!-- AdminLTE pattern -->
   <!-- Content Header (Page header) -->
   <div class="content-header">
-    <div class="container"><!-- Usa "container-fluid" si prefieres ancho completo -->
+    <div class="container">
       <div class="row mb-2">
         <div class="col-sm-12">
           <h1 class="m-0">Consulta y Actualización de Credenciales (RENIEC - PIDE)</h1>
@@ -16,9 +16,9 @@
 
   <!-- Main content -->
   <section class="content">
-    <div class="container"><!-- o "container-fluid" -->
+    <div class="container">
 
-      <!-- Notificaciones de éxito o error (session) -->
+      <!-- Notificaciones de éxito o error de Laravel (session) -->
       @if (session('success'))
         <div class="alert alert-success">
           {{ session('success') }}
@@ -35,7 +35,7 @@
       <div class="row" style="gap: 20px; align-items: stretch;">
 
         <!-- ================================
-             1. Formulario para ACTUALIZAR
+             1. Formulario ACTUALIZAR
            ================================ -->
         <div class="col-md-6">
           <div class="card" style="min-height: 300px;">
@@ -84,7 +84,13 @@
                 <!-- DNI -->
                 <div class="form-group">
                   <label for="nuDni">DNI (Usuario):</label>
-                  <input type="text" id="nuDni" name="nuDni" class="form-control" required>
+                  <input
+                    type="text"
+                    id="nuDni"
+                    name="nuDni"
+                    class="form-control"
+                    required
+                  >
                 </div>
 
                 <!-- RUC (pre-llenado) -->
@@ -100,19 +106,22 @@
                   >
                 </div>
 
-                <button type="submit" class="btn btn-primary mt-2 w-100">
+                <button
+                  type="submit"
+                  class="btn btn-primary mt-2 w-100"
+                >
                   Actualizar Credencial
                 </button>
               </form>
 
-              <!-- Resultado de actualizar -->
+              <!-- Resultado de actualizar (solo 1 contenedor de alertas) -->
               <div id="resultadoActualizar" class="mt-3"></div>
             </div>
           </div>
         </div>
 
         <!-- ============================
-             2. Formulario para CONSULTAR
+             2. Formulario CONSULTAR
            ============================ -->
         <div class="col-md-6">
           <div class="card" style="min-height: 300px;">
@@ -157,7 +166,6 @@
                   >
                 </div>
 
-                <!-- Contraseña PIDE (mostrar/ocultar) -->
                 <div class="form-group" style="position: relative;">
                   <label for="password">Contraseña PIDE:</label>
                   <input
@@ -174,12 +182,15 @@
                   </i>
                 </div>
 
-                <button type="submit" class="btn btn-success mt-2 w-100">
+                <button
+                  type="submit"
+                  class="btn btn-success mt-2 w-100"
+                >
                   Consultar
                 </button>
               </form>
 
-              <!-- Resultado de consulta -->
+              <!-- Resultado de consulta (solo 1 contenedor de alertas) -->
               <div id="resultadoConsulta" class="mt-3"></div>
             </div>
           </div>
@@ -187,10 +198,8 @@
       </div><!-- /.row -->
     </div><!-- /.container -->
   </section>
-  <!-- /.content -->
 </div><!-- /.content-wrapper -->
 @endsection
-
 
 @section('script')
 <script>
@@ -210,10 +219,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (inputField && iconToggle) {
       iconToggle.addEventListener('click', function() {
-        const isPassword = inputField.getAttribute('type') === 'password';
-        inputField.setAttribute('type', isPassword ? 'text' : 'password');
-
-        // Cambia el ícono (fa-eye <-> fa-eye-slash)
+        const isPassword = inputField.type === 'password';
+        inputField.type = isPassword ? 'text' : 'password';
+        // Cambia ícono
         this.classList.toggle('fa-eye');
         this.classList.toggle('fa-eye-slash');
       });
@@ -229,7 +237,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   frmActualizar.addEventListener('submit', function(e) {
     e.preventDefault();
-    divActualizar.innerHTML = "";
+    divActualizar.innerHTML = ""; // Limpia alertas previas
 
     const formData = new FormData(frmActualizar);
 
@@ -241,50 +249,32 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(json => {
       console.log("Actualizar JSON:", json);
 
-      // 1. Si hay error (excepción, etc.)
       if (json.error) {
-        divActualizar.innerHTML = `
-          <div class="alert alert-danger">
-            <strong>Error:</strong> ${json.error}
-          </div>`;
-        return;
+        // Error grave (excepción, etc.)
+        return showAlert(divActualizar, 'danger', 'Error', json.error);
       }
 
-      // 2. Verificamos si PIDE devolvió coResultado
+      // Verificamos si PIDE devolvió coResultado
       if (json.data && json.data.coResultado) {
         const coRes = json.data.coResultado;
         const deRes = json.data.deResultado || 'Sin descripción';
 
-        // Ejemplo de manejo de códigos
+        // Caso de éxito
         if (coRes === '0000') {
-          // Éxito
-          divActualizar.innerHTML = `
-            <div class="alert alert-success">
-              <strong>¡Credencial actualizada con éxito!</strong><br>
-              ${deRes}
-            </div>`;
+          showAlert(divActualizar, 'success', '¡Credencial actualizada con éxito!', deRes);
         } else {
-          // Error o advertencia: coRes != '0000'
-          divActualizar.innerHTML = `
-            <div class="alert alert-danger">
-              <strong>Error [${coRes}]:</strong> ${deRes}
-            </div>`;
+          // coRes != 0000 => error
+          showAlert(divActualizar, 'danger', `Error [${coRes}]`, deRes);
         }
 
       } else {
-        // Caso en que no hay coResultado => error genérico
-        divActualizar.innerHTML = `
-          <div class="alert alert-danger">
-            <strong>Error:</strong> No se recibió 'coResultado' en la respuesta. Verifique el servidor.
-          </div>`;
+        // No se recibió coResultado
+        showAlert(divActualizar, 'danger', 'Error', 'No se recibió coResultado en la respuesta. Verifique el servidor.');
       }
     })
     .catch(err => {
       console.error(err);
-      divActualizar.innerHTML = `
-        <div class="alert alert-danger">
-          <strong>Error de conexión:</strong> ${err}
-        </div>`;
+      showAlert(divActualizar, 'danger', 'Error de conexión', err);
     });
   });
 
@@ -297,7 +287,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   frmConsultar.addEventListener('submit', function(e) {
     e.preventDefault();
-    divConsulta.innerHTML = "";
+    divConsulta.innerHTML = ""; // Limpia alertas previas
 
     const formData = new FormData(frmConsultar);
 
@@ -308,98 +298,95 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(response => response.json())
     .then(json => {
       console.log("Consultar JSON:", json);
-      renderConsulta(json);
+
+      if (json.error) {
+        return showAlert(divConsulta, 'danger', 'Error', json.error);
+      }
+
+      // Revisamos si PIDE trae consultarResponse
+      if (json.data && json.data.consultarResponse) {
+        const retorno = json.data.consultarResponse.return;
+        if (!retorno) {
+          return showAlert(divConsulta, 'danger', 'Error', 'No se encontró "return" en la respuesta.');
+        }
+
+        const coResultado  = retorno.coResultado;
+        const deResultado  = retorno.deResultado;
+        const datosPersona = retorno.datosPersona;
+
+        if (coResultado === "0000") {
+          // Éxito
+          let html = `
+            <div class="alert alert-success">
+              <h5>Consulta Exitosa</h5>
+              <p><strong>Código de Resultado:</strong> ${coResultado}</p>
+              <p><strong>Mensaje:</strong> ${deResultado}</p>
+          `;
+
+          if (datosPersona) {
+            let apPrimer    = datosPersona.apPrimer || 'N/A';
+            let apSegundo   = datosPersona.apSegundo || 'N/A';
+            let prenombres  = datosPersona.prenombres || 'N/A';
+            let direccion   = datosPersona.direccion || 'N/A';
+            let estadoCivil = datosPersona.estadoCivil || 'N/A';
+            let restriccion = datosPersona.restriccion || 'N/A';
+            let ubigeo      = datosPersona.ubigeo || 'N/A';
+            let fotoBase64  = datosPersona.foto || '';
+
+            html += `
+              <ul>
+                <li><strong>Primer Apellido:</strong> ${apPrimer}</li>
+                <li><strong>Segundo Apellido:</strong> ${apSegundo}</li>
+                <li><strong>Nombres:</strong> ${prenombres}</li>
+                <li><strong>Dirección:</strong> ${direccion}</li>
+                <li><strong>Estado Civil:</strong> ${estadoCivil}</li>
+                <li><strong>Ubigeo:</strong> ${ubigeo}</li>
+                <li><strong>Restricción:</strong> ${restriccion}</li>
+              </ul>
+            `;
+
+            if (fotoBase64) {
+              html += `
+                <div>
+                  <strong>Foto:</strong><br>
+                  <img src="data:image/jpeg;base64,${fotoBase64}" alt="Foto del DNI" style="max-width: 200px;">
+                </div>
+              `;
+            }
+            html += `</div>`; // cierra alert-success
+          }
+          divConsulta.innerHTML = html;
+
+        } else {
+          // coResultado != 0000 => error
+          divConsulta.innerHTML = `
+            <div class="alert alert-warning">
+              <strong>Atención [${coResultado}]</strong>: ${deResultado}
+            </div>`;
+        }
+      } else {
+        showAlert(divConsulta, 'danger', 'Error', 'No se encontró "consultarResponse" en la respuesta.');
+      }
     })
     .catch(error => {
-      console.error("Error en fetch:", error);
-      divConsulta.innerHTML = `
-        <div class="alert alert-danger">
-          <strong>Error de conexión:</strong> ${error}
-        </div>`;
+      console.error(error);
+      showAlert(divConsulta, 'danger', 'Error de conexión', error);
     });
   });
 
-  function renderConsulta(json) {
-    if (json.error) {
-      divConsulta.innerHTML = `
-        <div class="alert alert-danger">
-          <strong>Error:</strong> ${json.error}
-        </div>`;
-      return;
-    }
 
-    // Verificamos si PIDE devolvió su estructura en "json.data.consultarResponse"
-    if (json.data && json.data.consultarResponse) {
-      const retorno = json.data.consultarResponse.return;
-      if (!retorno) {
-        divConsulta.innerHTML = `
-          <div class="alert alert-danger">
-            No se encontró "return" en la respuesta.
-          </div>`;
-        return;
-      }
-
-      const coResultado  = retorno.coResultado;
-      const deResultado  = retorno.deResultado;
-      const datosPersona = retorno.datosPersona;
-
-      if (coResultado === "0000") {
-        // Éxito
-        let html = `
-          <div class="alert alert-success">
-            <h5>Consulta Exitosa</h5>
-            <p><strong>Código de Resultado:</strong> ${coResultado}</p>
-            <p><strong>Mensaje:</strong> ${deResultado}</p>
-        `;
-
-        if (datosPersona) {
-          let apPrimer    = datosPersona.apPrimer || 'N/A';
-          let apSegundo   = datosPersona.apSegundo || 'N/A';
-          let prenombres  = datosPersona.prenombres || 'N/A';
-          let direccion   = datosPersona.direccion || 'N/A';
-          let estadoCivil = datosPersona.estadoCivil || 'N/A';
-          let restriccion = datosPersona.restriccion || 'N/A';
-          let ubigeo      = datosPersona.ubigeo || 'N/A';
-          let fotoBase64  = datosPersona.foto || '';
-
-          html += `
-            <ul>
-              <li><strong>Primer Apellido:</strong> ${apPrimer}</li>
-              <li><strong>Segundo Apellido:</strong> ${apSegundo}</li>
-              <li><strong>Nombres:</strong> ${prenombres}</li>
-              <li><strong>Dirección:</strong> ${direccion}</li>
-              <li><strong>Estado Civil:</strong> ${estadoCivil}</li>
-              <li><strong>Ubigeo:</strong> ${ubigeo}</li>
-              <li><strong>Restricción:</strong> ${restriccion}</li>
-            </ul>
-          `;
-
-          if (fotoBase64) {
-            html += `
-              <div>
-                <strong>Foto:</strong><br>
-                <img src="data:image/jpeg;base64,${fotoBase64}" alt="Foto del DNI" style="max-width: 200px;">
-              </div>
-            `;
-          }
-          html += `</div>`; // cierra alert-success
-        }
-        divConsulta.innerHTML = html;
-
-      } else {
-        // coResultado != 0000 => Error o advertencia
-        divConsulta.innerHTML = `
-          <div class="alert alert-warning">
-            <strong>Atención [${coResultado}]:</strong> ${deResultado}
-          </div>`;
-      }
-    } else {
-      divConsulta.innerHTML = `
-        <div class="alert alert-danger">
-          No se encontró "consultarResponse" en la respuesta.
-        </div>`;
-    }
+  // =======================================
+  // D) Función para Mostrar Alertas (reutilizable)
+  // =======================================
+  function showAlert(container, alertType, strongText, normalText) {
+    // Ej: alertType = 'success' | 'danger' | 'warning'
+    container.innerHTML = `
+      <div class="alert alert-${alertType}">
+        <strong>${strongText}:</strong> ${normalText}
+      </div>
+    `;
   }
+
 });
 </script>
 @endsection

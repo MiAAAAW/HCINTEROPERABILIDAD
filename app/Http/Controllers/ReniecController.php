@@ -7,9 +7,13 @@ use GuzzleHttp\Client;
 
 class ReniecController extends Controller
 {
+    /**
+     * Actualiza la credencial (contraseña) del usuario en RENIEC/PIDE.
+     * Endpoint local: POST /estudiante/reniec/actualizar
+     */
     public function actualizarCredencial(Request $request)
     {
-        // 1. Validar
+        // 1. Validar los campos necesarios
         $request->validate([
             'credencialAnterior' => 'required|string',
             'credencialNueva'    => 'required|string',
@@ -17,7 +21,7 @@ class ReniecController extends Controller
             'nuRuc'              => 'required|string',
         ]);
 
-        // 2. Construir el body JSON para PIDE
+        // 2. Preparar el cuerpo JSON para PIDE
         $body = [
             'PIDE' => [
                 'credencialAnterior' => $request->input('credencialAnterior'),
@@ -27,13 +31,13 @@ class ReniecController extends Controller
             ]
         ];
 
-        // 3. Guzzle Client
+        // 3. Instanciar el cliente Guzzle
         $client = new Client([
             'base_uri' => env('PIDE_BASE_URL', 'https://ws2.pide.gob.pe/Rest/RENIEC/')
         ]);
 
         try {
-            // 4. Consumir "/Actualizar?out=json"
+            // 4. POST a "/Actualizar?out=json"
             $response = $client->post('Actualizar?out=json', [
                 'headers' => [
                     'Content-Type' => 'application/json; charset=UTF-8',
@@ -41,30 +45,101 @@ class ReniecController extends Controller
                 'json' => $body
             ]);
 
+            // 5. Procesar la respuesta
             $statusCode   = $response->getStatusCode();
             $responseBody = $response->getBody()->getContents();
 
-            // ============= DEPURACIÓN CRUCIAL =============
-            // 1) VER TEXTO CRUDO (JSON, SOAP, etc.) en el navegador
-            dd($responseBody);
-
-            /*
-            // OPCIONAL: si no quieres detener la ejecución, usa Log::info:
-            \Log::info("[DEBUG] Respuesta Cruda de PIDE (Actualizar): ".$responseBody);
-
-            // 2) Intentar parsear JSON
+            // 6. Intentar parsear como JSON
             $jsonData = json_decode($responseBody, true);
 
-            // 3) Retornar lo mismo para que tu front reciba todo
+            $coResultado = null;
+            $deResultado = null;
+
+            // Caso A: Sí es un JSON con "coResultado" en la raíz
+            if (is_array($jsonData) && isset($jsonData['coResultado'])) {
+                $coResultado = $jsonData['coResultado'] ?? null;
+                $deResultado = $jsonData['deResultado'] ?? null;
+
+            } else {
+                // Caso B: Probablemente es SOAP (XML)
+                $xml = @simplexml_load_string($responseBody);
+                if ($xml !== false) {
+                    // Buscar en la ruta "//return/coResultado" y "//return/deResultado"
+                    $coResultNode = $xml->xpath('//return/coResultado');
+                    $deResultNode = $xml->xpath('//return/deResultado');
+
+                    $coResultado = isset($coResultNode[0]) ? (string)$coResultNode[0] : null;
+                    $deResultado = isset($deResultNode[0]) ? (string)$deResultNode[0] : null;
+                }
+            }
+
+            // 7. Retornar al Front: data.coResultado y data.deResultado
             return response()->json([
                 'status_code' => $statusCode,
-                'raw_pide'    => $responseBody,
-                'json_decoded'=> $jsonData
+                'data' => [
+                    'coResultado' => $coResultado,
+                    'deResultado' => $deResultado,
+                ]
             ], 200);
-            */
 
         } catch (\Exception $e) {
-            // Manejo de excepciones (errores de conexión, timeouts, etc.)
+            // Manejo de excepciones (errores de red, timeouts, etc.)
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Consulta datos de una persona por DNI en RENIEC/PIDE.
+     * Endpoint local: POST /estudiante/reniec/consultar
+     */
+    public function consultarDatos(Request $request)
+    {
+        // 1. Validar los campos necesarios
+        $request->validate([
+            'nuDniConsulta' => 'required|string', // DNI a consultar
+            'nuDniUsuario'  => 'required|string', // Tu DNI (usuario)
+            'nuRucUsuario'  => 'required|string', // RUC de la Entidad
+            'password'      => 'required|string', // Credencial PIDE (la nueva)
+        ]);
+
+        // 2. Armar el body JSON
+        $body = [
+            'PIDE' => [
+                'nuDniConsulta' => $request->input('nuDniConsulta'),
+                'nuDniUsuario'  => $request->input('nuDniUsuario'),
+                'nuRucUsuario'  => $request->input('nuRucUsuario'),
+                'password'      => $request->input('password'),
+            ]
+        ];
+
+        // 3. Cliente Guzzle
+        $client = new Client([
+            'base_uri' => env('PIDE_BASE_URL')
+        ]);
+
+        try {
+            // 4. POST a "/Consultar?out=json"
+            $response = $client->post('Consultar?out=json', [
+                'headers' => [
+                    'Content-Type' => 'application/json; charset=UTF-8',
+                ],
+                'json' => $body
+            ]);
+
+            // 5. Procesar la respuesta
+            $statusCode   = $response->getStatusCode();
+            $responseBody = $response->getBody()->getContents();
+            $jsonData     = json_decode($responseBody, true);
+
+            // 6. Devolver el resultado
+            return response()->json([
+                'status_code' => $statusCode,
+                'data'        => $jsonData
+            ], 200);
+
+        } catch (\Exception $e) {
             return response()->json([
                 'error' => $e->getMessage()
             ], 500);
