@@ -1,8 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="content-wrapper"><!-- AdminLTE pattern -->
-
+<div class="content-wrapper">
   <!-- Content Header (Page header) -->
   <div class="content-header">
     <div class="container">
@@ -19,7 +18,7 @@
   <section class="content">
     <div class="container">
 
-      <!-- Notificaciones de éxito o error (session) -->
+      <!-- Notificaciones de éxito o error de Laravel (session) -->
       @if (session('success'))
         <div class="alert alert-success">
           {{ session('success') }}
@@ -32,23 +31,24 @@
         </div>
       @endif
 
-      <!-- Formularios lado a lado (responsive) -->
+      <!-- Formularios lado a lado -->
       <div class="row" style="gap: 20px; align-items: stretch;">
 
         <!-- ================================
-             1. Formulario ACTUALIZAR (colapsable)
+             1. Formulario ACTUALIZAR
            ================================ -->
         <div class="col-md-6">
           <div class="card" style="min-height: 300px;">
 
-            <!-- Card Header se vuelve un "toggler" para colapsar -->
-            <div class="card-header bg-primary text-white"
+            <!-- Header con indicador de colapsar -->
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center"
                  data-toggle="collapse"
                  data-target="#collapseActualizar"
                  aria-expanded="true"
                  aria-controls="collapseActualizar"
                  style="cursor: pointer;">
               <h3 class="card-title">Gestionar Credenciales</h3>
+              <i class="fas fa-chevron-up" id="iconActualizar"></i>
             </div>
 
             <!-- Contenedor colapsable -->
@@ -104,7 +104,7 @@
                     >
                   </div>
 
-                  <!-- RUC (pre-llenado) -->
+                  <!-- RUC -->
                   <div class="form-group">
                     <label for="nuRuc">RUC de la Entidad:</label>
                     <input
@@ -125,27 +125,28 @@
                   </button>
                 </form>
 
-                <!-- Resultado de actualizar (solo 1 contenedor de alertas) -->
+                <!-- Resultado de actualizar -->
                 <div id="resultadoActualizar" class="mt-3"></div>
-              </div> <!-- card-body -->
-            </div> <!-- #collapseActualizar -->
-          </div> <!-- .card -->
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- ============================
-             2. Formulario CONSULTAR (colapsable)
+             2. Formulario CONSULTAR
            ============================ -->
         <div class="col-md-6">
           <div class="card" style="min-height: 300px;">
 
-            <!-- Card Header como "toggler" -->
-            <div class="card-header bg-success text-white"
+            <!-- Header con indicador de colapsar -->
+            <div class="card-header bg-success text-white d-flex justify-content-between align-items-center"
                  data-toggle="collapse"
                  data-target="#collapseConsultar"
                  aria-expanded="true"
                  aria-controls="collapseConsultar"
                  style="cursor: pointer;">
               <h3 class="card-title">Consulta de DNI</h3>
+              <i class="fas fa-chevron-up" id="iconConsultar"></i>
             </div>
 
             <!-- Contenedor colapsable -->
@@ -153,6 +154,7 @@
               <div class="card-body">
                 <form id="frmConsultar" onsubmit="return false;">
                   @csrf
+
                   <div class="form-group">
                     <label for="nuDniConsulta">DNI a Consultar:</label>
                     <input
@@ -211,18 +213,19 @@
                   </button>
                 </form>
 
-                <!-- Resultado de consulta (solo 1 contenedor de alertas) -->
+                <!-- Resultado de consulta -->
                 <div id="resultadoConsulta" class="mt-3"></div>
-              </div> <!-- card-body -->
-            </div> <!-- #collapseConsultar -->
-          </div> <!-- .card -->
+              </div>
+            </div>
+          </div>
         </div>
-
       </div><!-- /.row -->
     </div><!-- /.container -->
   </section>
-</div><!-- /.content-wrapper -->
+</div>
 @endsection
+
+
 
 @section('script')
 <script>
@@ -423,6 +426,22 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>`;
     });
   });
+
+    // =======================================
+  // D) COLAPSAR Y EXPANDIR CARDS
+  // =======================================
+  const toggleIcons = document.querySelectorAll('.toggle-icon');
+
+  toggleIcons.forEach(icon => {
+    const parentHeader = icon.closest('.card-header');
+    parentHeader.addEventListener('click', function() {
+      const collapse = parentHeader.nextElementSibling;
+      const isExpanded = collapse.classList.contains('show');
+      icon.classList.toggle('fa-chevron-up', !isExpanded);
+      icon.classList.toggle('fa-chevron-down', isExpanded);
+    });
+  });
+
 
 });
 </script>
