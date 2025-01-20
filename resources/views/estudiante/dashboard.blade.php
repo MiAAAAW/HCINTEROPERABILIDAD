@@ -329,7 +329,7 @@
         // =======================================
     // D) COLAPSAR Y EXPANDIR CARDS
     // =======================================
-    window.toggleCollapse = function(collapseId, iconId) {
+    cwindow.toggleCollapse = function(collapseId, iconId) {
       const collapse = document.getElementById(collapseId);
       const icon = document.getElementById(iconId);
 
@@ -345,5 +345,5 @@
 
     });
     </script>
-    @endsection
+@endsection
 
