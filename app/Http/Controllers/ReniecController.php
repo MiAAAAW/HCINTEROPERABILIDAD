@@ -21,7 +21,7 @@ class ReniecController extends Controller
             'nuRuc'              => 'required|string',
         ]);
 
-        // 2. Preparar el cuerpo JSON para PIDE
+        // 2. Preparar el cuerpo JSON
         $body = [
             'PIDE' => [
                 'credencialAnterior' => $request->input('credencialAnterior'),
@@ -37,7 +37,7 @@ class ReniecController extends Controller
         ]);
 
         try {
-            // 4. POST a "/Actualizar?out=json"
+            // 4. Consumir "Actualizar?out=json"
             $response = $client->post('Actualizar?out=json', [
                 'headers' => [
                     'Content-Type' => 'application/json; charset=UTF-8',
@@ -45,40 +45,30 @@ class ReniecController extends Controller
                 'json' => $body
             ]);
 
-            // 5. Procesar la respuesta
-            $statusCode   = $response->getStatusCode();
+            $statusCode   = $response->getStatusCode();   // 200, 400, etc.
             $responseBody = $response->getBody()->getContents();
 
-            // 6. Intentar parsear como JSON
+            // 5. Decodificar la respuesta JSON (aunque venga con estructura anidada)
             $jsonData = json_decode($responseBody, true);
 
+            // 6. Ajustar la ruta a "actualizarcredencialResponse.return"
+            //    según lo que obtuviste en la respuesta
             $coResultado = null;
             $deResultado = null;
 
-            // Caso A: Sí es un JSON con "coResultado" en la raíz
-            if (is_array($jsonData) && isset($jsonData['coResultado'])) {
-                $coResultado = $jsonData['coResultado'] ?? null;
-                $deResultado = $jsonData['deResultado'] ?? null;
-
-            } else {
-                // Caso B: Probablemente es SOAP (XML)
-                $xml = @simplexml_load_string($responseBody);
-                if ($xml !== false) {
-                    // Buscar en la ruta "//return/coResultado" y "//return/deResultado"
-                    $coResultNode = $xml->xpath('//return/coResultado');
-                    $deResultNode = $xml->xpath('//return/deResultado');
-
-                    $coResultado = isset($coResultNode[0]) ? (string)$coResultNode[0] : null;
-                    $deResultado = isset($deResultNode[0]) ? (string)$deResultNode[0] : null;
-                }
+            if (isset($jsonData['actualizarcredencialResponse']['return'])) {
+                $retorno = $jsonData['actualizarcredencialResponse']['return'];
+                $coResultado = $retorno['coResultado'] ?? null;
+                $deResultado = $retorno['deResultado'] ?? null;
             }
 
-            // 7. Retornar al Front: data.coResultado y data.deResultado
+            // 7. Retornar al front-end la estructura que el dashboard espera
+            //    "data.coResultado" y "data.deResultado"
             return response()->json([
                 'status_code' => $statusCode,
-                'data' => [
+                'data'        => [
                     'coResultado' => $coResultado,
-                    'deResultado' => $deResultado,
+                    'deResultado' => $deResultado
                 ]
             ], 200);
 
@@ -89,6 +79,7 @@ class ReniecController extends Controller
             ], 500);
         }
     }
+
 
     /**
      * Consulta datos de una persona por DNI en RENIEC/PIDE.
