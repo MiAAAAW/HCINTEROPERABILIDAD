@@ -49,26 +49,22 @@ class ReniecController extends Controller
             $statusCode   = $response->getStatusCode();
             $responseBody = $response->getBody()->getContents();
 
-
-            // 6. Intentar decodificar como JSON
+            // 6. Intentar parsear como JSON
             $jsonData = json_decode($responseBody, true);
 
             $coResultado = null;
             $deResultado = null;
 
+            // Caso A: Sí es un JSON con "coResultado" en la raíz
             if (is_array($jsonData) && isset($jsonData['coResultado'])) {
-                // Caso A: PIDE devolvió JSON con "coResultado"
                 $coResultado = $jsonData['coResultado'] ?? null;
                 $deResultado = $jsonData['deResultado'] ?? null;
 
             } else {
-                // Caso B: Probablemente es XML (SOAP). Intentamos parsear manualmente
-                // Verificamos que $jsonData es null o no tiene "coResultado"
-                // Asumimos que $responseBody es XML
+                // Caso B: Probablemente es SOAP (XML)
                 $xml = @simplexml_load_string($responseBody);
                 if ($xml !== false) {
                     // Buscar en la ruta "//return/coResultado" y "//return/deResultado"
-                    // (puede variar según la estructura SOAP real)
                     $coResultNode = $xml->xpath('//return/coResultado');
                     $deResultNode = $xml->xpath('//return/deResultado');
 
@@ -77,8 +73,7 @@ class ReniecController extends Controller
                 }
             }
 
-            // 7. Retornar al Front
-            // Aseguramos que data.coResultado y data.deResultado existan, aunque sean null
+            // 7. Retornar al Front: data.coResultado y data.deResultado
             return response()->json([
                 'status_code' => $statusCode,
                 'data' => [
@@ -89,7 +84,6 @@ class ReniecController extends Controller
 
         } catch (\Exception $e) {
             // Manejo de excepciones (errores de red, timeouts, etc.)
-            Log::error("ERROR actualizando credencial: ".$e->getMessage());
             return response()->json([
                 'error' => $e->getMessage()
             ], 500);
