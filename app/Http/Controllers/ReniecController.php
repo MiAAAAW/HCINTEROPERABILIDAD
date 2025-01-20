@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Log;
+
 
 class ReniecController extends Controller
 {
@@ -13,7 +15,6 @@ class ReniecController extends Controller
      */
     public function actualizarCredencial(Request $request)
     {
-        // 1. Validar los campos necesarios
         $request->validate([
             'credencialAnterior' => 'required|string',
             'credencialNueva'    => 'required|string',
@@ -21,71 +22,56 @@ class ReniecController extends Controller
             'nuRuc'              => 'required|string',
         ]);
 
-        // 2. Preparar el cuerpo JSON
         $body = [
             'PIDE' => [
-                'credencialAnterior' => $request->input('credencialAnterior'),
-                'credencialNueva'    => $request->input('credencialNueva'),
-                'nuDni'              => $request->input('nuDni'),
-                'nuRuc'              => $request->input('nuRuc'),
+                'credencialAnterior' => $request->credencialAnterior,
+                'credencialNueva'    => $request->credencialNueva,
+                'nuDni'              => $request->nuDni,
+                'nuRuc'              => $request->nuRuc,
             ]
         ];
 
-        // 3. Instanciar el cliente Guzzle
-        $client = new Client([
-            'base_uri' => env('PIDE_BASE_URL') // Por ej: "https://ws2.pide.gob.pe/Rest/RENIEC/"
+        $client = new \GuzzleHttp\Client([
+            'base_uri' => env('PIDE_BASE_URL', 'https://ws2.pide.gob.pe/Rest/RENIEC/'),
         ]);
 
         try {
-            // 4. POST a "/Actualizar?out=json"
             $response = $client->post('Actualizar?out=json', [
-                'headers' => [
-                    'Content-Type' => 'application/json; charset=UTF-8',
-                ],
-                'json' => $body
+                'headers' => [ 'Content-Type' => 'application/json; charset=UTF-8' ],
+                'json'    => $body
             ]);
 
-            // 5. Procesar la respuesta
-            $statusCode   = $response->getStatusCode();           // 200, 400, 500, etc.
-            $responseBody = $response->getBody()->getContents();  // Texto JSON
-            $jsonData     = json_decode($responseBody, true);
+            $statusCode   = $response->getStatusCode();
+            $responseBody = $response->getBody()->getContents();
 
-            /**
-             * Estructura típica devuelta por PIDE (ejemplo):
-             * {
-             *   "coResultado": "0000",
-             *   "deResultado": "Actualización realizada correctamente"
-             * }
-             *
-             * A veces puede variar, pero normalmente "coResultado" y "deResultado"
-             * están en la raíz del JSON.
-             */
+            // 1. Loguear la respuesta cruda
+            Log::info("[DEBUG] Respuesta cruda PIDE (Actualizar): ".$responseBody);
 
-            // Extraemos coResultado y deResultado
+            // 2. Dump & Die para ver en el navegador la respuesta cruda (opcional)
+            //    Esto detendrá la ejecución y te mostrará la respuesta en pantalla.
+            // dd($responseBody);
+
+            // 3. Intentar parsear como JSON
+            $jsonData = json_decode($responseBody, true);
+
+            // 4. Loguear el resultado de json_decode
+            Log::info("[DEBUG] jsonData parseado: ".print_r($jsonData, true));
+
+            // [Aquí tu lógica normal]
+            // Ejemplo:
             $coResultado = $jsonData['coResultado'] ?? null;
             $deResultado = $jsonData['deResultado'] ?? null;
 
-            /**
-             * Si deseas usar un status HTTP 200 siempre, basta con hacer:
-             *   $finalStatus = 200;
-             *
-             * Pero si quieres marcar un error cuando coResultado != '0000', podrías hacer:
-             */
-            $finalStatus = ($coResultado === '0000') ? 200 : 400;
-
-            // 6. Retornar la respuesta con la ESTRUCTURA unificada
+            // Retorno de ejemplo:
             return response()->json([
-                'status_code' => $finalStatus,
-                'data'        => [
+                'data' => [
                     'coResultado' => $coResultado,
-                    'deResultado' => $deResultado,
-                ],
-                // Si deseas ver la respuesta completa que vino de PIDE, podrías incluirla aquí:
-                // 'raw_pide'     => $jsonData,
-            ], $finalStatus);
+                    'deResultado' => $deResultado
+                ]
+            ], 200);
 
         } catch (\Exception $e) {
-            // Manejo de excepciones (errores de red, timeouts, etc.)
+            Log::error("ERROR actualizando credencial: ".$e->getMessage());
             return response()->json([
                 'error' => $e->getMessage()
             ], 500);

@@ -7,7 +7,7 @@
     <div class="container"><!-- Usa "container-fluid" si prefieres ancho completo -->
       <div class="row mb-2">
         <div class="col-sm-12">
-          <h1 class="m-0">Consulta y Actualización de Credenciales (RENIEC - PIDE)</h1>
+          <h1 class="m-0">[DEBUG] Consulta y Actualización de Credenciales (RENIEC - PIDE)</h1>
         </div>
       </div>
     </div>
@@ -35,12 +35,12 @@
       <div class="row" style="gap: 20px; align-items: stretch;">
 
         <!-- ================================
-             1. Formulario para ACTUALIZAR
+             1. Formulario para ACTUALIZAR (DEBUG)
            ================================ -->
         <div class="col-md-6">
           <div class="card" style="min-height: 300px;">
             <div class="card-header bg-primary text-white">
-              <h3 class="card-title">Gestionar Credenciales</h3>
+              <h3 class="card-title">[DEBUG] Gestionar Credenciales</h3>
             </div>
             <div class="card-body">
               <form id="frmActualizar" onsubmit="return false;">
@@ -101,7 +101,7 @@
                   >
                 </div>
 
-                <button type="submit" class="btn btn-primary mt-2 w-100">Actualizar Credencial</button>
+                <button type="submit" class="btn btn-primary mt-2 w-100">[DEBUG] Actualizar Credencial</button>
               </form>
 
               <!-- Resultado de actualizar -->
@@ -204,7 +204,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // ========================================================
-  // 1. ACTUALIZAR CREDENCIAL
+  // 1. ACTUALIZAR CREDENCIAL (DEBUG)
   // ========================================================
   const frmActualizar = document.getElementById('frmActualizar');
   const divActualizar = document.getElementById('resultadoActualizar');
@@ -215,50 +215,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const formData = new FormData(frmActualizar);
 
-    fetch("{{ route('reniec.actualizar') }}", {
+    // >>> OJO: Ahora llama a la ruta DEBUG <<<
+    fetch("{{ route('reniec.debug.actualizar') }}", {
       method: 'POST',
       body: formData
     })
     .then(resp => resp.json())
     .then(json => {
-      console.log("Actualizar JSON:", json);
+      console.log("[DEBUG] Actualizar JSON:", json);
 
-      if (json.error) {
-        // Error del servidor (excepción, etc.)
-        divActualizar.innerHTML = `
-          <div class="alert alert-danger">
-            <strong>Error:</strong> ${json.error}
-          </div>`;
-        return;
-      }
-
-      // Verificamos si PIDE devolvió coResultado
-      if (json.data && json.data.coResultado) {
-        const coRes = json.data.coResultado;
-        const deRes = json.data.deResultado || 'Sin descripción';
-
-        // Si es '0000' => Éxito
-        if (coRes === '0000') {
-          divActualizar.innerHTML = `
-            <div class="alert alert-success">
-              <strong>¡Credencial actualizada con éxito!</strong><br>
-              ${deRes}
-            </div>`;
-        } else {
-          // Cualquier otro coResultado => Error
-          divActualizar.innerHTML = `
-            <div class="alert alert-danger">
-              <strong>Error:</strong> La credencial no pudo actualizarse.<br>
-              ${deRes || 'Ingrese correctamente los datos.'}
-            </div>`;
-        }
-      } else {
-        // Caso en que no hay coResultado
-        divActualizar.innerHTML = `
-          <div class="alert alert-danger">
-            <strong>Error:</strong> No se recibió 'coResultado' en la respuesta. Verifique el servidor.
-          </div>`;
-      }
+      // Muestra en la pantalla la info cruda para que revises
+      divActualizar.innerHTML = `
+        <div class="alert alert-info" style="max-height: 250px; overflow:auto;">
+          <h5>DEBUG Respuesta:</h5>
+          <pre>${JSON.stringify(json, null, 2)}</pre>
+        </div>
+      `;
     })
     .catch(err => {
       console.error(err);
@@ -271,6 +243,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // ========================================================
   // 2. CONSULTAR DNI
+  //    (Permanece igual, o también puedes debuguear con otra ruta)
   // ========================================================
   const frmConsultar = document.getElementById('frmConsultar');
   const divConsulta  = document.getElementById('resultadoConsulta');
@@ -287,7 +260,7 @@ document.addEventListener('DOMContentLoaded', function() {
     })
     .then(response => response.json())
     .then(json => {
-      console.log("Consultar JSON:", json);
+      console.log("[CONSULTAR] JSON:", json);
       renderConsulta(json);
     })
     .catch(error => {
