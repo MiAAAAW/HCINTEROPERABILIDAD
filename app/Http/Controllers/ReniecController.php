@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
-use Illuminate\Support\Facades\Log;
-
 
 class ReniecController extends Controller
 {
@@ -15,6 +13,7 @@ class ReniecController extends Controller
      */
     public function actualizarCredencial(Request $request)
     {
+        // 1. Validar los campos necesarios
         $request->validate([
             'credencialAnterior' => 'required|string',
             'credencialNueva'    => 'required|string',
@@ -22,56 +21,44 @@ class ReniecController extends Controller
             'nuRuc'              => 'required|string',
         ]);
 
+        // 2. Preparar el cuerpo JSON
         $body = [
             'PIDE' => [
-                'credencialAnterior' => $request->credencialAnterior,
-                'credencialNueva'    => $request->credencialNueva,
-                'nuDni'              => $request->nuDni,
-                'nuRuc'              => $request->nuRuc,
+                'credencialAnterior' => $request->input('credencialAnterior'),
+                'credencialNueva'    => $request->input('credencialNueva'),
+                'nuDni'              => $request->input('nuDni'),
+                'nuRuc'              => $request->input('nuRuc'),
             ]
         ];
 
-        $client = new \GuzzleHttp\Client([
-            'base_uri' => env('PIDE_BASE_URL', 'https://ws2.pide.gob.pe/Rest/RENIEC/'),
+        // 3. Instanciar el cliente Guzzle
+        $client = new Client([
+            'base_uri' => env('PIDE_BASE_URL') // "https://ws2.pide.gob.pe/Rest/RENIEC"
         ]);
 
         try {
+            // 4. POST a "/Actualizar?out=json"
             $response = $client->post('Actualizar?out=json', [
-                'headers' => [ 'Content-Type' => 'application/json; charset=UTF-8' ],
-                'json'    => $body
+                'headers' => [
+                    'Content-Type' => 'application/json; charset=UTF-8',
+                ],
+                'json' => $body
             ]);
 
-            $statusCode   = $response->getStatusCode();
-            $responseBody = $response->getBody()->getContents();
+            // 5. Procesar la respuesta
+            $statusCode   = $response->getStatusCode();           // 200, 400, 500, etc.
+            $responseBody = $response->getBody()->getContents();  // Texto JSON
+            $jsonData     = json_decode($responseBody, true);
 
-            // 1. Loguear la respuesta cruda
-            Log::info("[DEBUG] Respuesta cruda PIDE (Actualizar): ".$responseBody);
-
-            // 2. Dump & Die para ver en el navegador la respuesta cruda (opcional)
-            //    Esto detendrá la ejecución y te mostrará la respuesta en pantalla.
-            // dd($responseBody);
-
-            // 3. Intentar parsear como JSON
-            $jsonData = json_decode($responseBody, true);
-
-            // 4. Loguear el resultado de json_decode
-            Log::info("[DEBUG] jsonData parseado: ".print_r($jsonData, true));
-
-            // [Aquí tu lógica normal]
-            // Ejemplo:
-            $coResultado = $jsonData['coResultado'] ?? null;
-            $deResultado = $jsonData['deResultado'] ?? null;
-
-            // Retorno de ejemplo:
+            // 6. Retornar la respuesta (JSON).
+            //    Podrías también redirigir con session si prefieres.
             return response()->json([
-                'data' => [
-                    'coResultado' => $coResultado,
-                    'deResultado' => $deResultado
-                ]
+                'status_code' => $statusCode,
+                'data'        => $jsonData
             ], 200);
 
         } catch (\Exception $e) {
-            Log::error("ERROR actualizando credencial: ".$e->getMessage());
+            // Manejo de excepciones (errores de red, timeouts, etc.)
             return response()->json([
                 'error' => $e->getMessage()
             ], 500);
@@ -121,48 +108,11 @@ class ReniecController extends Controller
             $responseBody = $response->getBody()->getContents();
             $jsonData     = json_decode($responseBody, true);
 
-            /**
-             * Estructura típica de la respuesta de PIDE en Consultar:
-             * {
-             *   "consultarResponse": {
-             *     "return": {
-             *       "coResultado": "0000",
-             *       "deResultado": "Consulta realizada correctamente",
-             *       "datosPersona": {
-             *           "apPrimer": "...",
-             *           "apSegundo": "...",
-             *           ...
-             *       }
-             *     }
-             *   }
-             * }
-             *
-             * coResultado suele estar dentro de "consultarResponse.return.coResultado"
-             */
-
-            // Extraemos coResultado y deResultado (si existen)
-            $coResultado = null;
-            $deResultado = null;
-            if (isset($jsonData['consultarResponse']['return'])) {
-                $retorno     = $jsonData['consultarResponse']['return'];
-                $coResultado = $retorno['coResultado'] ?? null;
-                $deResultado = $retorno['deResultado'] ?? null;
-            }
-
-            // Podrías decidir tu status final:
-            $finalStatus = ($coResultado === '0000') ? 200 : 400;
-
-            // 6. Devolver la respuesta, anidando coResultado y deResultado en 'data'
+            // 6. Devolver el resultado
             return response()->json([
-                'status_code' => $finalStatus,
-                'data'        => [
-                    'coResultado'       => $coResultado,
-                    'deResultado'       => $deResultado,
-                    // Incluimos toda la estructura 'consultarResponse' para que el front la use
-                    'consultarResponse' => $jsonData['consultarResponse'] ?? null,
-                ],
-                // 'raw_pide' => $jsonData, // si quieres ver la respuesta cruda
-            ], $finalStatus);
+                'status_code' => $statusCode,
+                'data'        => $jsonData
+            ], 200);
 
         } catch (\Exception $e) {
             return response()->json([
