@@ -2,6 +2,7 @@
 
 @section('content')
 <div class="content-wrapper"><!-- AdminLTE pattern -->
+
   <!-- Content Header (Page header) -->
   <div class="content-header">
     <div class="container">
@@ -18,7 +19,7 @@
   <section class="content">
     <div class="container">
 
-      <!-- Notificaciones de éxito o error de Laravel (session) -->
+      <!-- Notificaciones de éxito o error (session) -->
       @if (session('success'))
         <div class="alert alert-success">
           {{ session('success') }}
@@ -35,166 +36,188 @@
       <div class="row" style="gap: 20px; align-items: stretch;">
 
         <!-- ================================
-             1. Formulario ACTUALIZAR
+             1. Formulario ACTUALIZAR (colapsable)
            ================================ -->
         <div class="col-md-6">
           <div class="card" style="min-height: 300px;">
-            <div class="card-header bg-primary text-white">
+
+            <!-- Card Header se vuelve un "toggler" para colapsar -->
+            <div class="card-header bg-primary text-white"
+                 data-toggle="collapse"
+                 data-target="#collapseActualizar"
+                 aria-expanded="true"
+                 aria-controls="collapseActualizar"
+                 style="cursor: pointer;">
               <h3 class="card-title">Gestionar Credenciales</h3>
             </div>
-            <div class="card-body">
-              <form id="frmActualizar" onsubmit="return false;">
-                @csrf
 
-                <!-- Credencial Actual -->
-                <div class="form-group" style="position: relative;">
-                  <label for="credencialAnterior">Credencial Actual:</label>
-                  <input
-                    type="password"
-                    id="credencialAnterior"
-                    name="credencialAnterior"
-                    class="form-control"
-                    required
+            <!-- Contenedor colapsable -->
+            <div id="collapseActualizar" class="collapse show">
+              <div class="card-body">
+                <form id="frmActualizar" onsubmit="return false;">
+                  @csrf
+
+                  <!-- Credencial Actual -->
+                  <div class="form-group" style="position: relative;">
+                    <label for="credencialAnterior">Credencial Actual:</label>
+                    <input
+                      type="password"
+                      id="credencialAnterior"
+                      name="credencialAnterior"
+                      class="form-control"
+                      required
+                    >
+                    <i
+                      class="fas fa-eye"
+                      id="toggleCredAnterior"
+                      style="position: absolute; top: 35px; right: 15px; cursor: pointer;">
+                    </i>
+                  </div>
+
+                  <!-- Nueva Credencial -->
+                  <div class="form-group" style="position: relative;">
+                    <label for="credencialNueva">Nueva Credencial:</label>
+                    <input
+                      type="password"
+                      id="credencialNueva"
+                      name="credencialNueva"
+                      class="form-control"
+                      required
+                      minlength="8"
+                    >
+                    <i
+                      class="fas fa-eye"
+                      id="toggleCredNueva"
+                      style="position: absolute; top: 35px; right: 15px; cursor: pointer;">
+                    </i>
+                  </div>
+
+                  <!-- DNI -->
+                  <div class="form-group">
+                    <label for="nuDni">DNI (Usuario):</label>
+                    <input
+                      type="text"
+                      id="nuDni"
+                      name="nuDni"
+                      class="form-control"
+                      required
+                    >
+                  </div>
+
+                  <!-- RUC (pre-llenado) -->
+                  <div class="form-group">
+                    <label for="nuRuc">RUC de la Entidad:</label>
+                    <input
+                      type="text"
+                      id="nuRuc"
+                      name="nuRuc"
+                      class="form-control"
+                      required
+                      value="20181438364"
+                    >
+                  </div>
+
+                  <button
+                    type="submit"
+                    class="btn btn-primary mt-2 w-100"
                   >
-                  <i
-                    class="fas fa-eye"
-                    id="toggleCredAnterior"
-                    style="position: absolute; top: 35px; right: 15px; cursor: pointer;">
-                  </i>
-                </div>
+                    Actualizar Credencial
+                  </button>
+                </form>
 
-                <!-- Nueva Credencial -->
-                <div class="form-group" style="position: relative;">
-                  <label for="credencialNueva">Nueva Credencial:</label>
-                  <input
-                    type="password"
-                    id="credencialNueva"
-                    name="credencialNueva"
-                    class="form-control"
-                    required
-                    minlength="8"
-                  >
-                  <i
-                    class="fas fa-eye"
-                    id="toggleCredNueva"
-                    style="position: absolute; top: 35px; right: 15px; cursor: pointer;">
-                  </i>
-                </div>
-
-                <!-- DNI -->
-                <div class="form-group">
-                  <label for="nuDni">DNI (Usuario):</label>
-                  <input
-                    type="text"
-                    id="nuDni"
-                    name="nuDni"
-                    class="form-control"
-                    required
-                  >
-                </div>
-
-                <!-- RUC (pre-llenado) -->
-                <div class="form-group">
-                  <label for="nuRuc">RUC de la Entidad:</label>
-                  <input
-                    type="text"
-                    id="nuRuc"
-                    name="nuRuc"
-                    class="form-control"
-                    required
-                    value="20181438364"
-                  >
-                </div>
-
-                <button
-                  type="submit"
-                  class="btn btn-primary mt-2 w-100"
-                >
-                  Actualizar Credencial
-                </button>
-              </form>
-
-              <!-- Resultado de actualizar (solo 1 contenedor de alertas) -->
-              <div id="resultadoActualizar" class="mt-3"></div>
-            </div>
-          </div>
+                <!-- Resultado de actualizar (solo 1 contenedor de alertas) -->
+                <div id="resultadoActualizar" class="mt-3"></div>
+              </div> <!-- card-body -->
+            </div> <!-- #collapseActualizar -->
+          </div> <!-- .card -->
         </div>
 
         <!-- ============================
-             2. Formulario CONSULTAR
+             2. Formulario CONSULTAR (colapsable)
            ============================ -->
         <div class="col-md-6">
           <div class="card" style="min-height: 300px;">
-            <div class="card-header bg-success text-white">
+
+            <!-- Card Header como "toggler" -->
+            <div class="card-header bg-success text-white"
+                 data-toggle="collapse"
+                 data-target="#collapseConsultar"
+                 aria-expanded="true"
+                 aria-controls="collapseConsultar"
+                 style="cursor: pointer;">
               <h3 class="card-title">Consulta de DNI</h3>
             </div>
-            <div class="card-body">
-              <form id="frmConsultar" onsubmit="return false;">
-                @csrf
 
-                <div class="form-group">
-                  <label for="nuDniConsulta">DNI a Consultar:</label>
-                  <input
-                    type="text"
-                    id="nuDniConsulta"
-                    name="nuDniConsulta"
-                    class="form-control"
-                    required
+            <!-- Contenedor colapsable -->
+            <div id="collapseConsultar" class="collapse show">
+              <div class="card-body">
+                <form id="frmConsultar" onsubmit="return false;">
+                  @csrf
+                  <div class="form-group">
+                    <label for="nuDniConsulta">DNI a Consultar:</label>
+                    <input
+                      type="text"
+                      id="nuDniConsulta"
+                      name="nuDniConsulta"
+                      class="form-control"
+                      required
+                    >
+                  </div>
+
+                  <div class="form-group">
+                    <label for="nuDniUsuario">Tu DNI (Usuario):</label>
+                    <input
+                      type="text"
+                      id="nuDniUsuario"
+                      name="nuDniUsuario"
+                      class="form-control"
+                      required
+                    >
+                  </div>
+
+                  <div class="form-group">
+                    <label for="nuRucUsuario">RUC de la Entidad:</label>
+                    <input
+                      type="text"
+                      id="nuRucUsuario"
+                      name="nuRucUsuario"
+                      class="form-control"
+                      required
+                      value="20181438364"
+                    >
+                  </div>
+
+                  <div class="form-group" style="position: relative;">
+                    <label for="password">Contraseña PIDE:</label>
+                    <input
+                      type="password"
+                      id="password"
+                      name="password"
+                      class="form-control"
+                      required
+                    >
+                    <i
+                      class="fas fa-eye"
+                      id="togglePasswordPIDE"
+                      style="position: absolute; top: 35px; right: 15px; cursor: pointer;">
+                    </i>
+                  </div>
+
+                  <button
+                    type="submit"
+                    class="btn btn-success mt-2 w-100"
                   >
-                </div>
+                    Consultar
+                  </button>
+                </form>
 
-                <div class="form-group">
-                  <label for="nuDniUsuario">Tu DNI (Usuario):</label>
-                  <input
-                    type="text"
-                    id="nuDniUsuario"
-                    name="nuDniUsuario"
-                    class="form-control"
-                    required
-                  >
-                </div>
-
-                <div class="form-group">
-                  <label for="nuRucUsuario">RUC de la Entidad:</label>
-                  <input
-                    type="text"
-                    id="nuRucUsuario"
-                    name="nuRucUsuario"
-                    class="form-control"
-                    required
-                    value="20181438364"
-                  >
-                </div>
-
-                <div class="form-group" style="position: relative;">
-                  <label for="password">Contraseña PIDE:</label>
-                  <input
-                    type="password"
-                    id="password"
-                    name="password"
-                    class="form-control"
-                    required
-                  >
-                  <i
-                    class="fas fa-eye"
-                    id="togglePasswordPIDE"
-                    style="position: absolute; top: 35px; right: 15px; cursor: pointer;">
-                  </i>
-                </div>
-
-                <button
-                  type="submit"
-                  class="btn btn-success mt-2 w-100"
-                >
-                  Consultar
-                </button>
-              </form>
-
-              <!-- Resultado de consulta (solo 1 contenedor de alertas) -->
-              <div id="resultadoConsulta" class="mt-3"></div>
-            </div>
-          </div>
+                <!-- Resultado de consulta (solo 1 contenedor de alertas) -->
+                <div id="resultadoConsulta" class="mt-3"></div>
+              </div> <!-- card-body -->
+            </div> <!-- #collapseConsultar -->
+          </div> <!-- .card -->
         </div>
+
       </div><!-- /.row -->
     </div><!-- /.container -->
   </section>
@@ -219,9 +242,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (inputField && iconToggle) {
       iconToggle.addEventListener('click', function() {
-        const isPassword = inputField.type === 'password';
+        const isPassword = (inputField.type === 'password');
         inputField.type = isPassword ? 'text' : 'password';
-        // Cambia ícono
+        // Cambiar ícono (fa-eye <-> fa-eye-slash)
         this.classList.toggle('fa-eye');
         this.classList.toggle('fa-eye-slash');
       });
@@ -237,7 +260,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   frmActualizar.addEventListener('submit', function(e) {
     e.preventDefault();
-    divActualizar.innerHTML = ""; // Limpia alertas previas
+    divActualizar.innerHTML = "";
 
     const formData = new FormData(frmActualizar);
 
@@ -250,31 +273,44 @@ document.addEventListener('DOMContentLoaded', function() {
       console.log("Actualizar JSON:", json);
 
       if (json.error) {
-        // Error grave (excepción, etc.)
-        return showAlert(divActualizar, 'danger', 'Error', json.error);
+        divActualizar.innerHTML = `
+          <div class="alert alert-danger">
+            <strong>Error:</strong> ${json.error}
+          </div>`;
+        return;
       }
 
-      // Verificamos si PIDE devolvió coResultado
       if (json.data && json.data.coResultado) {
         const coRes = json.data.coResultado;
         const deRes = json.data.deResultado || 'Sin descripción';
 
-        // Caso de éxito
         if (coRes === '0000') {
-          showAlert(divActualizar, 'success', '¡Credencial actualizada con éxito!', deRes);
+          // Éxito
+          divActualizar.innerHTML = `
+            <div class="alert alert-success">
+              <strong>¡Credencial actualizada con éxito!</strong><br>
+              ${deRes}
+            </div>`;
         } else {
-          // coRes != 0000 => error
-          showAlert(divActualizar, 'danger', `Error [${coRes}]`, deRes);
+          // Error
+          divActualizar.innerHTML = `
+            <div class="alert alert-danger">
+              <strong>Error [${coRes}]:</strong> ${deRes}
+            </div>`;
         }
-
       } else {
-        // No se recibió coResultado
-        showAlert(divActualizar, 'danger', 'Error', 'No se recibió coResultado en la respuesta. Verifique el servidor.');
+        divActualizar.innerHTML = `
+          <div class="alert alert-danger">
+            <strong>Error:</strong> No se recibió "coResultado" en la respuesta.
+          </div>`;
       }
     })
     .catch(err => {
       console.error(err);
-      showAlert(divActualizar, 'danger', 'Error de conexión', err);
+      divActualizar.innerHTML = `
+        <div class="alert alert-danger">
+          <strong>Error de conexión:</strong> ${err}
+        </div>`;
     });
   });
 
@@ -287,7 +323,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   frmConsultar.addEventListener('submit', function(e) {
     e.preventDefault();
-    divConsulta.innerHTML = ""; // Limpia alertas previas
+    divConsulta.innerHTML = "";
 
     const formData = new FormData(frmConsultar);
 
@@ -300,14 +336,22 @@ document.addEventListener('DOMContentLoaded', function() {
       console.log("Consultar JSON:", json);
 
       if (json.error) {
-        return showAlert(divConsulta, 'danger', 'Error', json.error);
+        divConsulta.innerHTML = `
+          <div class="alert alert-danger">
+            <strong>Error:</strong> ${json.error}
+          </div>`;
+        return;
       }
 
       // Revisamos si PIDE trae consultarResponse
       if (json.data && json.data.consultarResponse) {
         const retorno = json.data.consultarResponse.return;
         if (!retorno) {
-          return showAlert(divConsulta, 'danger', 'Error', 'No se encontró "return" en la respuesta.');
+          divConsulta.innerHTML = `
+            <div class="alert alert-danger">
+              No se encontró "return" en la respuesta.
+            </div>`;
+          return;
         }
 
         const coResultado  = retorno.coResultado;
@@ -361,31 +405,24 @@ document.addEventListener('DOMContentLoaded', function() {
           // coResultado != 0000 => error
           divConsulta.innerHTML = `
             <div class="alert alert-warning">
-              <strong>Atención [${coResultado}]</strong>: ${deResultado}
+              <strong>Atención [${coResultado}]:</strong> ${deResultado}
             </div>`;
         }
       } else {
-        showAlert(divConsulta, 'danger', 'Error', 'No se encontró "consultarResponse" en la respuesta.');
+        divConsulta.innerHTML = `
+          <div class="alert alert-danger">
+            No se encontró "consultarResponse" en la respuesta.
+          </div>`;
       }
     })
     .catch(error => {
       console.error(error);
-      showAlert(divConsulta, 'danger', 'Error de conexión', error);
+      divConsulta.innerHTML = `
+        <div class="alert alert-danger">
+          <strong>Error de conexión:</strong> ${error}
+        </div>`;
     });
   });
-
-
-  // =======================================
-  // D) Función para Mostrar Alertas (reutilizable)
-  // =======================================
-  function showAlert(container, alertType, strongText, normalText) {
-    // Ej: alertType = 'success' | 'danger' | 'warning'
-    container.innerHTML = `
-      <div class="alert alert-${alertType}">
-        <strong>${strongText}:</strong> ${normalText}
-      </div>
-    `;
-  }
 
 });
 </script>
