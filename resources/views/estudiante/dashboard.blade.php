@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="content-wrapper">
+<div class="content-wrapper"><!-- Ajusta el espaciado general -->
 
   <!-- Content Header -->
   <div class="content-header">
@@ -18,7 +18,7 @@
   <section class="content">
     <div class="container">
 
-      <!-- Notificaciones de Laravel -->
+      <!-- Notificaciones -->
       @if (session('success'))
         <div class="alert alert-success">
           {{ session('success') }}
@@ -37,16 +37,12 @@
         <!-- Formulario ACTUALIZAR -->
         <div class="col-md-6">
           <div class="card">
-
-            <!-- Header con flecha -->
             <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center"
                  onclick="toggleCollapse('collapseActualizar', 'iconActualizar')"
                  style="cursor: pointer;">
               <h3 class="card-title">Gestionar Credenciales</h3>
               <i id="iconActualizar" class="fas fa-chevron-up toggle-icon"></i>
             </div>
-
-            <!-- Contenido colapsable -->
             <div id="collapseActualizar" class="collapse show">
               <div class="card-body">
                 <form id="frmActualizar" onsubmit="return false;">
@@ -80,16 +76,12 @@
         <!-- Formulario CONSULTAR -->
         <div class="col-md-6">
           <div class="card">
-
-            <!-- Header con flecha -->
             <div class="card-header bg-success text-white d-flex justify-content-between align-items-center"
                  onclick="toggleCollapse('collapseConsultar', 'iconConsultar')"
                  style="cursor: pointer;">
               <h3 class="card-title">Consulta de DNI</h3>
               <i id="iconConsultar" class="fas fa-chevron-up toggle-icon"></i>
             </div>
-
-            <!-- Contenido colapsable -->
             <div id="collapseConsultar" class="collapse show">
               <div class="card-body">
                 <form id="frmConsultar" onsubmit="return false;">
@@ -125,8 +117,7 @@
 </div>
 
 
-
-    @section('script')
+@section('script')
     <script>
     document.addEventListener('DOMContentLoaded', function() {
     // =======================================
@@ -345,5 +336,5 @@
 
     });
     </script>
-    @endsection
+@endsection
 
