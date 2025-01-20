@@ -117,6 +117,162 @@
     </section>
 </div>
 
+@section('script')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // =======================================
+    // A) Mostrar/Ocultar Contraseñas
+    // =======================================
+    const toggles = [
+        { inputId: 'credencialAnterior', iconId: 'toggleCredAnterior' },
+        { inputId: 'credencialNueva', iconId: 'toggleCredNueva' },
+        { inputId: 'password', iconId: 'togglePasswordPIDE' }
+    ];
 
+    toggles.forEach(item => {
+        const inputField = document.getElementById(item.inputId);
+        const iconToggle = document.getElementById(item.iconId);
+
+        if (inputField && iconToggle) {
+            iconToggle.addEventListener('click', function() {
+                const isPassword = inputField.type === 'password';
+                inputField.type = isPassword ? 'text' : 'password';
+                // Cambiar ícono (fa-eye <-> fa-eye-slash)
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+            });
+        }
+    });
+
+    // =======================================
+    // B) ACTUALIZAR CREDENCIAL
+    // =======================================
+    const frmActualizar = document.getElementById('frmActualizar');
+    const divActualizar = document.getElementById('resultadoActualizar');
+
+    if (frmActualizar) {
+        frmActualizar.addEventListener('submit', function(e) {
+            e.preventDefault();
+            divActualizar.innerHTML = "";
+
+            const formData = new FormData(frmActualizar);
+
+            fetch("{{ route('reniec.actualizar') }}", {
+                method: 'POST',
+                body: formData
+            })
+            .then(resp => resp.json())
+            .then(json => {
+                if (json.error) {
+                    divActualizar.innerHTML = `<div class="alert alert-danger"><strong>Error:</strong> ${json.error}</div>`;
+                    return;
+                }
+
+                if (json.data && json.data.coResultado) {
+                    const coRes = json.data.coResultado;
+                    const deRes = json.data.deResultado || 'Sin descripción';
+
+                    divActualizar.innerHTML = coRes === '0000'
+                        ? `<div class="alert alert-success"><strong>¡Credencial actualizada con éxito!</strong><br>${deRes}</div>`
+                        : `<div class="alert alert-danger"><strong>Error [${coRes}]:</strong> ${deRes}</div>`;
+                } else {
+                    divActualizar.innerHTML = `<div class="alert alert-danger"><strong>Error:</strong> No se recibió "coResultado" en la respuesta.</div>`;
+                }
+            })
+            .catch(err => {
+                divActualizar.innerHTML = `<div class="alert alert-danger"><strong>Error de conexión:</strong> ${err}</div>`;
+            });
+        });
+    }
+
+    // =======================================
+    // C) CONSULTAR DNI
+    // =======================================
+    const frmConsultar = document.getElementById('frmConsultar');
+    const divConsulta = document.getElementById('resultadoConsulta');
+
+    if (frmConsultar) {
+        frmConsultar.addEventListener('submit', function(e) {
+            e.preventDefault();
+            divConsulta.innerHTML = "";
+
+            const formData = new FormData(frmConsultar);
+
+            fetch("{{ route('reniec.consultar') }}", {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(json => {
+                if (json.error) {
+                    divConsulta.innerHTML = `<div class="alert alert-danger"><strong>Error:</strong> ${json.error}</div>`;
+                    return;
+                }
+
+                if (json.data && json.data.consultarResponse) {
+                    const retorno = json.data.consultarResponse.return;
+                    if (!retorno) {
+                        divConsulta.innerHTML = `<div class="alert alert-danger">No se encontró "return" en la respuesta.</div>`;
+                        return;
+                    }
+
+                    const coResultado = retorno.coResultado;
+                    const deResultado = retorno.deResultado;
+                    const datosPersona = retorno.datosPersona;
+
+                    if (coResultado === "0000") {
+                        let html = `
+                            <div class="alert alert-success">
+                                <h5>Consulta Exitosa</h5>
+                                <p><strong>Código de Resultado:</strong> ${coResultado}</p>
+                                <p><strong>Mensaje:</strong> ${deResultado}</p>
+                        `;
+
+                        if (datosPersona) {
+                            html += `
+                                <ul>
+                                    <li><strong>Primer Apellido:</strong> ${datosPersona.apPrimer || 'N/A'}</li>
+                                    <li><strong>Segundo Apellido:</strong> ${datosPersona.apSegundo || 'N/A'}</li>
+                                    <li><strong>Nombres:</strong> ${datosPersona.prenombres || 'N/A'}</li>
+                                    <li><strong>Dirección:</strong> ${datosPersona.direccion || 'N/A'}</li>
+                                    <li><strong>Estado Civil:</strong> ${datosPersona.estadoCivil || 'N/A'}</li>
+                                    <li><strong>Ubigeo:</strong> ${datosPersona.ubigeo || 'N/A'}</li>
+                                    <li><strong>Restricción:</strong> ${datosPersona.restriccion || 'N/A'}</li>
+                                </ul>
+                            `;
+                        }
+
+                        divConsulta.innerHTML = html + '</div>';
+                    } else {
+                        divConsulta.innerHTML = `<div class="alert alert-warning"><strong>Atención [${coResultado}]:</strong> ${deResultado}</div>`;
+                    }
+                } else {
+                    divConsulta.innerHTML = `<div class="alert alert-danger">No se encontró "consultarResponse" en la respuesta.</div>`;
+                }
+            })
+            .catch(error => {
+                divConsulta.innerHTML = `<div class="alert alert-danger"><strong>Error de conexión:</strong> ${error}</div>`;
+            });
+        });
+    }
+
+    // =======================================
+    // D) COLAPSAR Y EXPANDIR CARDS
+    // =======================================
+    window.toggleCollapse = function(collapseId, iconId) {
+        const collapse = document.getElementById(collapseId);
+        const icon = document.getElementById(iconId);
+
+        if (collapse.classList.contains('show')) {
+            collapse.classList.remove('show');
+            icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+        } else {
+            collapse.classList.add('show');
+            icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+        }
+    };
+});
+</script>
 @endsection
+
 
