@@ -1,7 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="content-wrapper">
+<div class="content-wrapper"><!-- AdminLTE pattern -->
+
   <!-- Content Header (Page header) -->
   <div class="content-header">
     <div class="container">
@@ -18,7 +19,7 @@
   <section class="content">
     <div class="container">
 
-      <!-- Notificaciones de éxito o error de Laravel (session) -->
+      <!-- Notificaciones de éxito o error (session) -->
       @if (session('success'))
         <div class="alert alert-success">
           {{ session('success') }}
@@ -31,24 +32,23 @@
         </div>
       @endif
 
-      <!-- Formularios lado a lado -->
+      <!-- Formularios lado a lado (responsive) -->
       <div class="row" style="gap: 20px; align-items: stretch;">
 
         <!-- ================================
-             1. Formulario ACTUALIZAR
+             1. Formulario ACTUALIZAR (colapsable)
            ================================ -->
         <div class="col-md-6">
           <div class="card" style="min-height: 300px;">
 
-            <!-- Header con indicador de colapsar -->
-            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center"
+            <!-- Card Header se vuelve un "toggler" para colapsar -->
+            <div class="card-header bg-primary text-white"
                  data-toggle="collapse"
                  data-target="#collapseActualizar"
                  aria-expanded="true"
                  aria-controls="collapseActualizar"
                  style="cursor: pointer;">
               <h3 class="card-title">Gestionar Credenciales</h3>
-              <i class="fas fa-chevron-up" id="iconActualizar"></i>
             </div>
 
             <!-- Contenedor colapsable -->
@@ -104,7 +104,7 @@
                     >
                   </div>
 
-                  <!-- RUC -->
+                  <!-- RUC (pre-llenado) -->
                   <div class="form-group">
                     <label for="nuRuc">RUC de la Entidad:</label>
                     <input
@@ -125,28 +125,27 @@
                   </button>
                 </form>
 
-                <!-- Resultado de actualizar -->
+                <!-- Resultado de actualizar (solo 1 contenedor de alertas) -->
                 <div id="resultadoActualizar" class="mt-3"></div>
-              </div>
-            </div>
-          </div>
+              </div> <!-- card-body -->
+            </div> <!-- #collapseActualizar -->
+          </div> <!-- .card -->
         </div>
 
         <!-- ============================
-             2. Formulario CONSULTAR
+             2. Formulario CONSULTAR (colapsable)
            ============================ -->
         <div class="col-md-6">
           <div class="card" style="min-height: 300px;">
 
-            <!-- Header con indicador de colapsar -->
-            <div class="card-header bg-success text-white d-flex justify-content-between align-items-center"
+            <!-- Card Header como "toggler" -->
+            <div class="card-header bg-success text-white"
                  data-toggle="collapse"
                  data-target="#collapseConsultar"
                  aria-expanded="true"
                  aria-controls="collapseConsultar"
                  style="cursor: pointer;">
               <h3 class="card-title">Consulta de DNI</h3>
-              <i class="fas fa-chevron-up" id="iconConsultar"></i>
             </div>
 
             <!-- Contenedor colapsable -->
@@ -154,7 +153,6 @@
               <div class="card-body">
                 <form id="frmConsultar" onsubmit="return false;">
                   @csrf
-
                   <div class="form-group">
                     <label for="nuDniConsulta">DNI a Consultar:</label>
                     <input
@@ -213,49 +211,219 @@
                   </button>
                 </form>
 
-                <!-- Resultado de consulta -->
+                <!-- Resultado de consulta (solo 1 contenedor de alertas) -->
                 <div id="resultadoConsulta" class="mt-3"></div>
-              </div>
-            </div>
-          </div>
+              </div> <!-- card-body -->
+            </div> <!-- #collapseConsultar -->
+          </div> <!-- .card -->
         </div>
+
       </div><!-- /.row -->
     </div><!-- /.container -->
   </section>
-</div>
+</div><!-- /.content-wrapper -->
 @endsection
 
 @section('script')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   // =======================================
-  // Actualizar íconos de colapso
+  // A) Mostrar/Ocultar Contraseñas
   // =======================================
-  const collapseActualizar = document.getElementById('collapseActualizar');
-  const collapseConsultar = document.getElementById('collapseConsultar');
+  const toggles = [
+    { inputId: 'credencialAnterior', iconId: 'toggleCredAnterior' },
+    { inputId: 'credencialNueva',    iconId: 'toggleCredNueva' },
+    { inputId: 'password',           iconId: 'togglePasswordPIDE' }
+  ];
 
-  const iconActualizar = document.getElementById('iconActualizar');
-  const iconConsultar = document.getElementById('iconConsultar');
+  toggles.forEach(item => {
+    const inputField = document.getElementById(item.inputId);
+    const iconToggle = document.getElementById(item.iconId);
 
-  collapseActualizar.addEventListener('show.bs.collapse', () => {
-    iconActualizar.classList.remove('fa-chevron-down');
-    iconActualizar.classList.add('fa-chevron-up');
+    if (inputField && iconToggle) {
+      iconToggle.addEventListener('click', function() {
+        const isPassword = (inputField.type === 'password');
+        inputField.type = isPassword ? 'text' : 'password';
+        // Cambiar ícono (fa-eye <-> fa-eye-slash)
+        this.classList.toggle('fa-eye');
+        this.classList.toggle('fa-eye-slash');
+      });
+    }
   });
 
-  collapseActualizar.addEventListener('hide.bs.collapse', () => {
-    iconActualizar.classList.remove('fa-chevron-up');
-    iconActualizar.classList.add('fa-chevron-down');
+
+  // =======================================
+  // B) ACTUALIZAR CREDENCIAL
+  // =======================================
+  const frmActualizar = document.getElementById('frmActualizar');
+  const divActualizar = document.getElementById('resultadoActualizar');
+
+  frmActualizar.addEventListener('submit', function(e) {
+    e.preventDefault();
+    divActualizar.innerHTML = "";
+
+    const formData = new FormData(frmActualizar);
+
+    fetch("{{ route('reniec.actualizar') }}", {
+      method: 'POST',
+      body: formData
+    })
+    .then(resp => resp.json())
+    .then(json => {
+      console.log("Actualizar JSON:", json);
+
+      if (json.error) {
+        divActualizar.innerHTML = `
+          <div class="alert alert-danger">
+            <strong>Error:</strong> ${json.error}
+          </div>`;
+        return;
+      }
+
+      if (json.data && json.data.coResultado) {
+        const coRes = json.data.coResultado;
+        const deRes = json.data.deResultado || 'Sin descripción';
+
+        if (coRes === '0000') {
+          // Éxito
+          divActualizar.innerHTML = `
+            <div class="alert alert-success">
+              <strong>¡Credencial actualizada con éxito!</strong><br>
+              ${deRes}
+            </div>`;
+        } else {
+          // Error
+          divActualizar.innerHTML = `
+            <div class="alert alert-danger">
+              <strong>Error [${coRes}]:</strong> ${deRes}
+            </div>`;
+        }
+      } else {
+        divActualizar.innerHTML = `
+          <div class="alert alert-danger">
+            <strong>Error:</strong> No se recibió "coResultado" en la respuesta.
+          </div>`;
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      divActualizar.innerHTML = `
+        <div class="alert alert-danger">
+          <strong>Error de conexión:</strong> ${err}
+        </div>`;
+    });
   });
 
-  collapseConsultar.addEventListener('show.bs.collapse', () => {
-    iconConsultar.classList.remove('fa-chevron-down');
-    iconConsultar.classList.add('fa-chevron-up');
+
+  // =======================================
+  // C) CONSULTAR DNI
+  // =======================================
+  const frmConsultar = document.getElementById('frmConsultar');
+  const divConsulta  = document.getElementById('resultadoConsulta');
+
+  frmConsultar.addEventListener('submit', function(e) {
+    e.preventDefault();
+    divConsulta.innerHTML = "";
+
+    const formData = new FormData(frmConsultar);
+
+    fetch("{{ route('reniec.consultar') }}", {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(json => {
+      console.log("Consultar JSON:", json);
+
+      if (json.error) {
+        divConsulta.innerHTML = `
+          <div class="alert alert-danger">
+            <strong>Error:</strong> ${json.error}
+          </div>`;
+        return;
+      }
+
+      // Revisamos si PIDE trae consultarResponse
+      if (json.data && json.data.consultarResponse) {
+        const retorno = json.data.consultarResponse.return;
+        if (!retorno) {
+          divConsulta.innerHTML = `
+            <div class="alert alert-danger">
+              No se encontró "return" en la respuesta.
+            </div>`;
+          return;
+        }
+
+        const coResultado  = retorno.coResultado;
+        const deResultado  = retorno.deResultado;
+        const datosPersona = retorno.datosPersona;
+
+        if (coResultado === "0000") {
+          // Éxito
+          let html = `
+            <div class="alert alert-success">
+              <h5>Consulta Exitosa</h5>
+              <p><strong>Código de Resultado:</strong> ${coResultado}</p>
+              <p><strong>Mensaje:</strong> ${deResultado}</p>
+          `;
+
+          if (datosPersona) {
+            let apPrimer    = datosPersona.apPrimer || 'N/A';
+            let apSegundo   = datosPersona.apSegundo || 'N/A';
+            let prenombres  = datosPersona.prenombres || 'N/A';
+            let direccion   = datosPersona.direccion || 'N/A';
+            let estadoCivil = datosPersona.estadoCivil || 'N/A';
+            let restriccion = datosPersona.restriccion || 'N/A';
+            let ubigeo      = datosPersona.ubigeo || 'N/A';
+            let fotoBase64  = datosPersona.foto || '';
+
+            html += `
+              <ul>
+                <li><strong>Primer Apellido:</strong> ${apPrimer}</li>
+                <li><strong>Segundo Apellido:</strong> ${apSegundo}</li>
+                <li><strong>Nombres:</strong> ${prenombres}</li>
+                <li><strong>Dirección:</strong> ${direccion}</li>
+                <li><strong>Estado Civil:</strong> ${estadoCivil}</li>
+                <li><strong>Ubigeo:</strong> ${ubigeo}</li>
+                <li><strong>Restricción:</strong> ${restriccion}</li>
+              </ul>
+            `;
+
+            if (fotoBase64) {
+              html += `
+                <div>
+                  <strong>Foto:</strong><br>
+                  <img src="data:image/jpeg;base64,${fotoBase64}" alt="Foto del DNI" style="max-width: 200px;">
+                </div>
+              `;
+            }
+            html += `</div>`; // cierra alert-success
+          }
+          divConsulta.innerHTML = html;
+
+        } else {
+          // coResultado != 0000 => error
+          divConsulta.innerHTML = `
+            <div class="alert alert-warning">
+              <strong>Atención [${coResultado}]:</strong> ${deResultado}
+            </div>`;
+        }
+      } else {
+        divConsulta.innerHTML = `
+          <div class="alert alert-danger">
+            No se encontró "consultarResponse" en la respuesta.
+          </div>`;
+      }
+    })
+    .catch(error => {
+      console.error(error);
+      divConsulta.innerHTML = `
+        <div class="alert alert-danger">
+          <strong>Error de conexión:</strong> ${error}
+        </div>`;
+    });
   });
 
-  collapseConsultar.addEventListener('hide.bs.collapse', () => {
-    iconConsultar.classList.remove('fa-chevron-up');
-    iconConsultar.classList.add('fa-chevron-down');
-  });
 });
 </script>
 @endsection
