@@ -176,7 +176,7 @@ Route::group(['middleware' =>'docente'], function (){
 Route::group(['middleware' =>'estudiante'], function (){
 
     Route::get('estudiante/dashboard' , [DashboardController::class , 'dashboard'] );
-    Route::get('estudiante/notas', [DashboardController::class, 'ruc']);
+    Route::get('estudiante/ruc', [DashboardController::class, 'ruc']);
     //Route::get('estudiante/notas', [EstudianteNotasController::class, 'notas']);
 
     Route::get('estudiante/change_password' , [UserController::class , 'change_password'] );
