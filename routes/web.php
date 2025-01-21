@@ -183,33 +183,39 @@ Route::group(['middleware' =>'estudiante'], function (){
     Route::post('estudiante/change_password', [UserController::class , 'update_change_password'] );
 
 
-    /// Rutas para servicios SOAP de SUNAT
-    Route::post('estudiante/sunat/datos-principales', [RucController::class, 'getDatosPrincipales'])
-        ->name('sunat.datos-principales');
+    // --- RUTAS PARA EL CONSUMO DE RENIEC A TRAVÉS DE PIDE ---
+    Route::post('estudiante/reniec/actualizar', [ReniecController::class, 'actualizarCredencial'])
+         ->name('reniec.actualizar');
+    Route::post('estudiante/reniec/consultar', [ReniecController::class, 'consultarDatos'])
+         ->name('reniec.consultar');
+
+   /// Rutas para servicios SOAP de SUNAT
+   Route::post('estudiante/sunat/datos-principales', [RucController::class, 'getDatosPrincipales'])
+    ->name('sunat.datos-principales');
     Route::post('estudiante/sunat/datos-secundarios', [RucController::class, 'getDatosSecundarios'])
-        ->name('sunat.datos-secundarios');
+    ->name('sunat.datos-secundarios');
     Route::post('estudiante/sunat/datos-t1144', [RucController::class, 'getDatosT1144'])
-        ->name('sunat.datos-t1144');
+    ->name('sunat.datos-t1144');
     Route::post('estudiante/sunat/datos-t362', [RucController::class, 'getDatosT362'])
-        ->name('sunat.datos-t362');
+    ->name('sunat.datos-t362');
     Route::post('estudiante/sunat/domicilio-legal', [RucController::class, 'getDomicilioLegal'])
-        ->name('sunat.domicilio-legal');
+    ->name('sunat.domicilio-legal');
     Route::post('estudiante/sunat/establecimientos-anexos', [RucController::class, 'getEstablecimientosAnexos'])
-        ->name('sunat.establecimientos-anexos');
+    ->name('sunat.establecimientos-anexos');
     Route::post('estudiante/sunat/establecimientos-t1150', [RucController::class, 'getEstAnexosT1150'])
-        ->name('sunat.establecimientos-t1150');
+    ->name('sunat.establecimientos-t1150');
     Route::post('estudiante/sunat/representantes-legales', [RucController::class, 'getRepLegales'])
-        ->name('sunat.representantes-legales');
+    ->name('sunat.representantes-legales');
     Route::post('estudiante/sunat/razon-social', [RucController::class, 'buscarRazonSocial'])
-        ->name('sunat.razon-social');
+    ->name('sunat.razon-social');
 
     // Ruta para combinar todos los datos y mostrarlos en la vista
     Route::post('estudiante/sunat/todos-los-datos', [RucController::class, 'getAllData'])
-        ->name('sunat.todos-los-datos');
+    ->name('sunat.todos-los-datos');
 
     // Ruta para obtener datos REST
     Route::post('estudiante/sunat/datos-rest', [RucController::class, 'getDatosViaREST'])
-        ->name('sunat.datos-rest');
+    ->name('sunat.datos-rest');
 
 
 });
