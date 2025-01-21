@@ -1,15 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consulta RUC - SUNAT</title>
-</head>
-<body>
-    <h1>Consulta RUC - Servicios SUNAT</h1>
+@extends('layouts.app')
 
+@section('content')
+<div class="container">
+    <h1 class="text-center mt-4">Consulta RUC - Servicios SUNAT</h1>
+
+    <!-- Mostrar errores -->
     @if ($errors->any())
-        <div style="color: red;">
+        <div class="alert alert-danger">
             <ul>
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -18,27 +15,43 @@
         </div>
     @endif
 
-    <form action="{{ url('/estudiante/ruc/consultar') }}" method="POST">
-        @csrf
-        <label for="ruc">Número de RUC:</label>
-        <input type="text" id="ruc" name="ruc" value="{{ old('ruc') }}" required>
-        <br>
+    <!-- Formulario -->
+    <div class="card mt-4">
+        <div class="card-body">
+            <form action="{{ url('/estudiante/ruc/consultar') }}" method="POST">
+                @csrf
+                <div class="mb-3">
+                    <label for="ruc" class="form-label">Número de RUC:</label>
+                    <input type="text" id="ruc" name="ruc" class="form-control" value="{{ old('ruc') }}" required>
+                </div>
 
-        <label for="service">Seleccionar Servicio:</label>
-        <select id="service" name="service">
-            <option value="getDatosPrincipales" {{ old('service') == 'getDatosPrincipales' ? 'selected' : '' }}>Datos Principales</option>
-            <option value="getDatosSecundarios" {{ old('service') == 'getDatosSecundarios' ? 'selected' : '' }}>Datos Secundarios</option>
-            <option value="getDomicilioLegal" {{ old('service') == 'getDomicilioLegal' ? 'selected' : '' }}>Domicilio Legal</option>
-            <option value="getEstablecimientosAnexos" {{ old('service') == 'getEstablecimientosAnexos' ? 'selected' : '' }}>Establecimientos Anexos</option>
-        </select>
-        <br>
-        <button type="submit">Consultar</button>
-    </form>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Consultar</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-    @if (isset($result))
-        <h2>Resultados para el RUC: {{ $ruc }}</h2>
-        <h3>Servicio Consultado: {{ $service }}</h3>
-        <pre>{{ json_encode($result, JSON_PRETTY_PRINT) }}</pre>
+    <!-- Mostrar resultados -->
+    @if (isset($results))
+        <div class="mt-4">
+            <h2>Resultados para el RUC: {{ $ruc }}</h2>
+
+            @foreach ($results as $service => $result)
+                <div class="card mt-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">{{ $service }}</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (isset($result['error']) && $result['error'])
+                            <p class="text-danger">Error: {{ $result['message'] }}</p>
+                        @else
+                            <pre>{{ json_encode($result, JSON_PRETTY_PRINT) }}</pre>
+                        @endif
+                    </div>
+                </div>
+            @endforeach
+        </div>
     @endif
-</body>
-</html>
+</div>
+@endsection

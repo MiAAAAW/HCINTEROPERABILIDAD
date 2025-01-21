@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use SoapClient;
 use GuzzleHttp\Client;
 use Exception;
 
@@ -41,40 +40,23 @@ class RucController extends Controller
         return view('estudiante.ruc');
     }
 
-    // Procesar consulta según el servicio seleccionado
+    // Consultar todos los servicios
     public function consultar(Request $request)
     {
         $ruc = $request->input('ruc');
-        $service = $request->input('service');
 
         if (!$ruc) {
             return back()->withErrors(['El número de RUC es obligatorio.']);
         }
 
-        // Determinar el endpoint y realizar la consulta
-        switch ($service) {
-            case 'getDatosPrincipales':
-                $endpoint = "DatosPrincipales";
-                break;
-            case 'getDatosSecundarios':
-                $endpoint = "DatosSecundarios";
-                break;
-            case 'getDomicilioLegal':
-                $endpoint = "DomicilioLegal";
-                break;
-            case 'getEstablecimientosAnexos':
-                $endpoint = "EstablecimientosAnexos";
-                break;
-            default:
-                return back()->withErrors(['Servicio no válido.']);
-        }
+        // Ejecutar todas las consultas
+        $results = [
+            'DatosPrincipales' => $this->consumeService("DatosPrincipales", ['numruc' => $ruc, 'out' => 'json']),
+            'DatosSecundarios' => $this->consumeService("DatosSecundarios", ['numruc' => $ruc, 'out' => 'json']),
+            'DomicilioLegal' => $this->consumeService("DomicilioLegal", ['numruc' => $ruc, 'out' => 'json']),
+            'EstablecimientosAnexos' => $this->consumeService("EstablecimientosAnexos", ['numruc' => $ruc, 'out' => 'json']),
+        ];
 
-        $result = $this->consumeService($endpoint, ['numruc' => $ruc, 'out' => 'json']);
-
-        if (isset($result['error']) && $result['error'] === true) {
-            return back()->withErrors([$result['message']]);
-        }
-
-        return view('estudiante.ruc', ['result' => $result, 'ruc' => $ruc, 'service' => $service]);
+        return view('estudiante.ruc', ['results' => $results, 'ruc' => $ruc]);
     }
 }
