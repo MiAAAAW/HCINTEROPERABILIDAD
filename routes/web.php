@@ -191,7 +191,7 @@ Route::group(['middleware' =>'estudiante'], function (){
 
    /// Rutas para servicios  de SUNAT
 
-    Route::post('/estudiante/ruc/consultar', [RucController::class, 'consultar']);
+    Route::post('estudiante/ruc/consultar', [RucController::class, 'consultar'])->name('estudiante.ruc.consultar');;
 
 
 });
