@@ -58,43 +58,44 @@
                         @if(isset($results['DatosPrincipales']['list']['multiRef']))
                             <h4 class="text-info">Datos Principales</h4>
                             <ul>
-                                <li><strong>Código de Ubigeo:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_ubigeo']['$'] }}</li>
-                                <li><strong>Código de Departamento:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['cod_dep']['$'] }}</li>
-                                <li><strong>Descripción de Departamento:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['desc_dep']['$'] }}</li>
-                                <li><strong>Código de Provincia:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['cod_prov']['$'] }}</li>
-                                <li><strong>Descripción de Provincia:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['desc_prov']['$'] }}</li>
-                                <li><strong>Código de Distrito:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['cod_dist']['$'] }}</li>
-                                <li><strong>Descripción de Distrito:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['desc_dist']['$'] }}</li>
-                                <li><strong>Código de Actividad Económica:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_ciiu']['$'] }}</li>
-                                <li><strong>Descripción de Actividad Económica:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['desc_ciiu']['$'] }}</li>
-                                <li><strong>Estado del Contribuyente:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_estado']['$'] }}</li>
-                                <li><strong>Descripción del Estado:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['desc_estado']['$'] }}</li>
-                                <li><strong>Fecha de Actualización:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_fecact']['$'] }}</li>
-                                <li><strong>Fecha de Alta:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_fecalt']['$'] }}</li>
-                                <li><strong>Fecha de Baja:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_fecbaj']['$'] }}</li>
-                                <li><strong>Tipo de Persona:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_identi']['$'] }}</li>
-                                <li><strong>Descripción de Tipo de Persona:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['desc_identi']['$'] }}</li>
-                                <li><strong>Libreta Tributaria:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_lllttt']['$'] }}</li>
-                                <li><strong>Nombre o Razón Social:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_nombre']['$'] }}</li>
-                                <li><strong>Nombre de la Vía:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_nomvia']['$'] }}</li>
-                                <li><strong>Número:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_numer1']['$'] }}</li>
-                                <li><strong>Interior:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_inter1']['$'] }}</li>
-                                <li><strong>Nombre de la Zona:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_nomzon']['$'] }}</li>
-                                <li><strong>Referencia de Ubicación:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_refer1']['$'] }}</li>
-                                <li><strong>Condición del Domicilio:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_flag22']['$'] }}</li>
-                                <li><strong>Descripción de Condición del Domicilio:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['desc_flag22']['$'] }}</li>
-                                <li><strong>Código de Dependencia:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_numreg']['$'] }}</li>
-                                <li><strong>Descripción de Dependencia:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['desc_numreg']['$'] }}</li>
-                                <li><strong>Número de RUC:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_numruc']['$'] }}</li>
-                                <li><strong>Código de Tipo de Vía:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_tipvia']['$'] }}</li>
-                                <li><strong>Descripción de Tipo de Vía:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['desc_tipvia']['$'] }}</li>
-                                <li><strong>Código de Tipo de Zona:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_tipzon']['$'] }}</li>
-                                <li><strong>Descripción de Tipo de Zona:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['desc_tipzon']['$'] }}</li>
-                                <li><strong>Tipo de Contribuyente:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_tpoemp']['$'] }}</li>
-                                <li><strong>Descripción del Contribuyente:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['desc_tpoemp']['$'] }}</li>
-                                <li><strong>Código de Secuencia:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_secuen']['$'] }}</li>
-                                <li><strong>Estado Activo:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['esActivo']['$'] ? 'Sí' : 'No' }}</li>
-                                <li><strong>Estado Habido:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['esHabido']['$'] ? 'Sí' : 'No' }}</li>
+                                @php $data = $results['DatosPrincipales']['list']['multiRef']; @endphp
+                                <li><strong>Código de Ubigeo:</strong> {{ $data['ddp_ubigeo']['$'] ?? 'No disponible' }}</li>
+                                <li><strong>Código de Departamento:</strong> {{ $data['cod_dep']['$'] ?? 'No disponible' }}</li>
+                                <li><strong>Descripción de Departamento:</strong> {{ $data['desc_dep']['$'] ?? 'No disponible' }}</li>
+                                <li><strong>Código de Provincia:</strong> {{ $data['cod_prov']['$'] ?? 'No disponible' }}</li>
+                                <li><strong>Descripción de Provincia:</strong> {{ $data['desc_prov']['$'] ?? 'No disponible' }}</li>
+                                <li><strong>Código de Distrito:</strong> {{ $data['cod_dist']['$'] ?? 'No disponible' }}</li>
+                                <li><strong>Descripción de Distrito:</strong> {{ $data['desc_dist']['$'] ?? 'No disponible' }}</li>
+                                <li><strong>Código de Actividad Económica:</strong> {{ $data['ddp_ciiu']['$'] ?? 'No disponible' }}</li>
+                                <li><strong>Descripción de Actividad Económica:</strong> {{ $data['desc_ciiu']['$'] ?? 'No disponible' }}</li>
+                                <li><strong>Estado del Contribuyente:</strong> {{ $data['ddp_estado']['$'] ?? 'No disponible' }}</li>
+                                <li><strong>Descripción del Estado:</strong> {{ $data['desc_estado']['$'] ?? 'No disponible' }}</li>
+                                <li><strong>Fecha de Actualización:</strong> {{ $data['ddp_fecact']['$'] ?? 'No disponible' }}</li>
+                                <li><strong>Fecha de Alta:</strong> {{ $data['ddp_fecalt']['$'] ?? 'No disponible' }}</li>
+                                <li><strong>Fecha de Baja:</strong> {{ $data['ddp_fecbaj']['$'] ?? 'No disponible' }}</li>
+                                <li><strong>Tipo de Persona:</strong> {{ $data['ddp_identi']['$'] ?? 'No disponible' }}</li>
+                                <li><strong>Descripción de Tipo de Persona:</strong> {{ $data['desc_identi']['$'] ?? 'No disponible' }}</li>
+                                <li><strong>Libreta Tributaria:</strong> {{ $data['ddp_lllttt']['$'] ?? 'No disponible' }}</li>
+                                <li><strong>Nombre o Razón Social:</strong> {{ $data['ddp_nombre']['$'] ?? 'No disponible' }}</li>
+                                <li><strong>Nombre de la Vía:</strong> {{ $data['ddp_nomvia']['$'] ?? 'No disponible' }}</li>
+                                <li><strong>Número:</strong> {{ $data['ddp_numer1']['$'] ?? 'No disponible' }}</li>
+                                <li><strong>Interior:</strong> {{ $data['ddp_inter1']['$'] ?? 'No disponible' }}</li>
+                                <li><strong>Nombre de la Zona:</strong> {{ $data['ddp_nomzon']['$'] ?? 'No disponible' }}</li>
+                                <li><strong>Referencia de Ubicación:</strong> {{ $data['ddp_refer1']['$'] ?? 'No disponible' }}</li>
+                                <li><strong>Condición del Domicilio:</strong> {{ $data['ddp_flag22']['$'] ?? 'No disponible' }}</li>
+                                <li><strong>Descripción de Condición del Domicilio:</strong> {{ $data['desc_flag22']['$'] ?? 'No disponible' }}</li>
+                                <li><strong>Código de Dependencia:</strong> {{ $data['ddp_numreg']['$'] ?? 'No disponible' }}</li>
+                                <li><strong>Descripción de Dependencia:</strong> {{ $data['desc_numreg']['$'] ?? 'No disponible' }}</li>
+                                <li><strong>Número de RUC:</strong> {{ $data['ddp_numruc']['$'] ?? 'No disponible' }}</li>
+                                <li><strong>Código de Tipo de Vía:</strong> {{ $data['ddp_tipvia']['$'] ?? 'No disponible' }}</li>
+                                <li><strong>Descripción de Tipo de Vía:</strong> {{ $data['desc_tipvia']['$'] ?? 'No disponible' }}</li>
+                                <li><strong>Código de Tipo de Zona:</strong> {{ $data['ddp_tipzon']['$'] ?? 'No disponible' }}</li>
+                                <li><strong>Descripción de Tipo de Zona:</strong> {{ $data['desc_tipzon']['$'] ?? 'No disponible' }}</li>
+                                <li><strong>Tipo de Contribuyente:</strong> {{ $data['ddp_tpoemp']['$'] ?? 'No disponible' }}</li>
+                                <li><strong>Descripción del Contribuyente:</strong> {{ $data['desc_tpoemp']['$'] ?? 'No disponible' }}</li>
+                                <li><strong>Código de Secuencia:</strong> {{ $data['ddp_secuen']['$'] ?? 'No disponible' }}</li>
+                                <li><strong>Estado Activo:</strong> {{ $data['esActivo']['$'] ?? 'No disponible' }}</li>
+                                <li><strong>Estado Habido:</strong> {{ $data['esHabido']['$'] ?? 'No disponible' }}</li>
                             </ul>
                         @endif
                     </div>
