@@ -60,35 +60,42 @@
                             <ul>
                                 <li><strong>Código de Ubigeo:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_ubigeo']['$'] }}</li>
                                 <li><strong>Código de Departamento:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['cod_dep']['$'] }}</li>
-                                <li><strong>Descripción del Departamento:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['desc_dep']['$'] }}</li>
+                                <li><strong>Descripción de Departamento:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['desc_dep']['$'] }}</li>
                                 <li><strong>Código de Provincia:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['cod_prov']['$'] }}</li>
-                                <li><strong>Descripción de la Provincia:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['desc_prov']['$'] }}</li>
+                                <li><strong>Descripción de Provincia:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['desc_prov']['$'] }}</li>
+                                <li><strong>Código de Distrito:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['cod_dist']['$'] }}</li>
+                                <li><strong>Descripción de Distrito:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['desc_dist']['$'] }}</li>
+                                <li><strong>Código de Actividad Económica:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_ciiu']['$'] }}</li>
+                                <li><strong>Descripción de Actividad Económica:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['desc_ciiu']['$'] }}</li>
+                                <li><strong>Estado del Contribuyente:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_estado']['$'] }}</li>
+                                <li><strong>Descripción del Estado:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['desc_estado']['$'] }}</li>
+                                <li><strong>Fecha de Actualización:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_fecact']['$'] }}</li>
+                                <li><strong>Fecha de Alta:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_fecalt']['$'] }}</li>
+                                <li><strong>Fecha de Baja:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_fecbaj']['$'] }}</li>
+                                <li><strong>Tipo de Persona:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_identi']['$'] }}</li>
+                                <li><strong>Descripción de Tipo de Persona:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['desc_identi']['$'] }}</li>
+                                <li><strong>Libreta Tributaria:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_lllttt']['$'] }}</li>
                                 <li><strong>Nombre o Razón Social:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_nombre']['$'] }}</li>
-                                <li><strong>Estado:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['desc_estado']['$'] }}</li>
+                                <li><strong>Nombre de la Vía:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_nomvia']['$'] }}</li>
+                                <li><strong>Número:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_numer1']['$'] }}</li>
+                                <li><strong>Interior:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_inter1']['$'] }}</li>
+                                <li><strong>Nombre de la Zona:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_nomzon']['$'] }}</li>
+                                <li><strong>Referencia de Ubicación:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_refer1']['$'] }}</li>
+                                <li><strong>Condición del Domicilio:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_flag22']['$'] }}</li>
+                                <li><strong>Descripción de Condición del Domicilio:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['desc_flag22']['$'] }}</li>
+                                <li><strong>Código de Dependencia:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_numreg']['$'] }}</li>
+                                <li><strong>Descripción de Dependencia:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['desc_numreg']['$'] }}</li>
+                                <li><strong>Número de RUC:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_numruc']['$'] }}</li>
+                                <li><strong>Código de Tipo de Vía:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_tipvia']['$'] }}</li>
+                                <li><strong>Descripción de Tipo de Vía:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['desc_tipvia']['$'] }}</li>
+                                <li><strong>Código de Tipo de Zona:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_tipzon']['$'] }}</li>
+                                <li><strong>Descripción de Tipo de Zona:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['desc_tipzon']['$'] }}</li>
+                                <li><strong>Tipo de Contribuyente:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_tpoemp']['$'] }}</li>
+                                <li><strong>Descripción del Contribuyente:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['desc_tpoemp']['$'] }}</li>
+                                <li><strong>Código de Secuencia:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_secuen']['$'] }}</li>
+                                <li><strong>Estado Activo:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['esActivo']['$'] ? 'Sí' : 'No' }}</li>
+                                <li><strong>Estado Habido:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['esHabido']['$'] ? 'Sí' : 'No' }}</li>
                             </ul>
-                        @endif
-
-                        <!-- Datos Secundarios -->
-                        @if(isset($results['DatosSecundarios']['list']['multiRef']))
-                            <h4 class="text-info">Datos Secundarios</h4>
-                            <ul>
-                                <li><strong>Fecha de Inicio:</strong> {{ $results['DatosSecundarios']['list']['multiRef']['dds_inicio']['$'] }}</li>
-                                <li><strong>Fecha de Nacimiento:</strong> {{ $results['DatosSecundarios']['list']['multiRef']['dds_fecnac']['$'] }}</li>
-                                <li><strong>Sexo:</strong> {{ $results['DatosSecundarios']['list']['multiRef']['desc_sexo']['$'] }}</li>
-                                <li><strong>Nacionalidad:</strong> {{ $results['DatosSecundarios']['list']['multiRef']['desc_nacion']['$'] }}</li>
-                            </ul>
-                        @endif
-
-                        <!-- Domicilio Legal -->
-                        @if(isset($results['DomicilioLegal']['list']['getDomicilioLegalResponse']))
-                            <h4 class="text-info">Domicilio Legal</h4>
-                            <p>{{ $results['DomicilioLegal']['list']['getDomicilioLegalResponse']['getDomicilioLegalReturn']['$'] }}</p>
-                        @endif
-
-                        <!-- Establecimientos Anexos -->
-                        @if(isset($results['EstablecimientosAnexos']['list']['getEstablecimientosAnexosResponse']['getEstablecimientosAnexosReturn']['@arrayType']))
-                            <h4 class="text-info">Establecimientos Anexos</h4>
-                            <p>No hay establecimientos anexos registrados.</p>
                         @endif
                     </div>
                 </div>
