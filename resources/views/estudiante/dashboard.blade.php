@@ -40,10 +40,10 @@
 
             <!-- Header con flecha -->
             <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center"
-                 onclick="toggleCollapse('collapseActualizar', 'iconActualizar')"
-                 style="cursor: pointer;">
-              <h3 class="card-title">Gestionar Credenciales</h3>
-              <i id="iconActualizar" class="fas fa-chevron-up toggle-icon"></i>
+                    onclick="toggleCollapse('collapseActualizar', 'iconActualizar')"
+                    style="cursor: pointer;">
+                <h3 class="card-title mb-0">Gestionar Credenciales</h3>
+                <i id="iconActualizar" class="fas fa-chevron-down toggle-icon ml-auto"></i>
             </div>
 
             <!-- Contenido colapsable -->
@@ -83,10 +83,10 @@
 
             <!-- Header con flecha -->
             <div class="card-header bg-success text-white d-flex justify-content-between align-items-center"
-                 onclick="toggleCollapse('collapseConsultar', 'iconConsultar')"
-                 style="cursor: pointer;">
-              <h3 class="card-title">Consulta de DNI</h3>
-              <i id="iconConsultar" class="fas fa-chevron-up toggle-icon"></i>
+                    onclick="toggleCollapse('collapseConsultar', 'iconConsultar')"
+                    style="cursor: pointer;">
+                <h3 class="card-title mb-0">Consulta de DNI</h3>
+                <i id="iconConsultar" class="fas fa-chevron-down toggle-icon ml-auto"></i>
             </div>
 
             <!-- Contenido colapsable -->
