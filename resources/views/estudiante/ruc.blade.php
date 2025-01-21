@@ -54,16 +54,42 @@
                         <h3 class="card-title">Resultados de la Consulta</h3>
                     </div>
                     <div class="card-body">
-                        @foreach($results as $key => $result)
-                            <h4 class="text-info">{{ ucfirst(str_replace('_', ' ', $key)) }}</h4>
-                            @if(isset($result['error']) && $result['error'])
-                                <div class="alert alert-danger">
-                                    <p>{{ $result['message'] }}</p>
-                                </div>
-                            @else
-                                <pre>{{ json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
-                            @endif
-                        @endforeach
+                        <!-- Datos Principales -->
+                        @if(isset($results['DatosPrincipales']['list']['multiRef']))
+                            <h4 class="text-info">Datos Principales</h4>
+                            <ul>
+                                <li><strong>Código de Ubigeo:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_ubigeo']['$'] }}</li>
+                                <li><strong>Código de Departamento:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['cod_dep']['$'] }}</li>
+                                <li><strong>Descripción del Departamento:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['desc_dep']['$'] }}</li>
+                                <li><strong>Código de Provincia:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['cod_prov']['$'] }}</li>
+                                <li><strong>Descripción de la Provincia:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['desc_prov']['$'] }}</li>
+                                <li><strong>Nombre o Razón Social:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['ddp_nombre']['$'] }}</li>
+                                <li><strong>Estado:</strong> {{ $results['DatosPrincipales']['list']['multiRef']['desc_estado']['$'] }}</li>
+                            </ul>
+                        @endif
+
+                        <!-- Datos Secundarios -->
+                        @if(isset($results['DatosSecundarios']['list']['multiRef']))
+                            <h4 class="text-info">Datos Secundarios</h4>
+                            <ul>
+                                <li><strong>Fecha de Inicio:</strong> {{ $results['DatosSecundarios']['list']['multiRef']['dds_inicio']['$'] }}</li>
+                                <li><strong>Fecha de Nacimiento:</strong> {{ $results['DatosSecundarios']['list']['multiRef']['dds_fecnac']['$'] }}</li>
+                                <li><strong>Sexo:</strong> {{ $results['DatosSecundarios']['list']['multiRef']['desc_sexo']['$'] }}</li>
+                                <li><strong>Nacionalidad:</strong> {{ $results['DatosSecundarios']['list']['multiRef']['desc_nacion']['$'] }}</li>
+                            </ul>
+                        @endif
+
+                        <!-- Domicilio Legal -->
+                        @if(isset($results['DomicilioLegal']['list']['getDomicilioLegalResponse']))
+                            <h4 class="text-info">Domicilio Legal</h4>
+                            <p>{{ $results['DomicilioLegal']['list']['getDomicilioLegalResponse']['getDomicilioLegalReturn']['$'] }}</p>
+                        @endif
+
+                        <!-- Establecimientos Anexos -->
+                        @if(isset($results['EstablecimientosAnexos']['list']['getEstablecimientosAnexosResponse']['getEstablecimientosAnexosReturn']['@arrayType']))
+                            <h4 class="text-info">Establecimientos Anexos</h4>
+                            <p>No hay establecimientos anexos registrados.</p>
+                        @endif
                     </div>
                 </div>
             @endif
