@@ -33,6 +33,32 @@
 
       <!-- Formularios lado a lado -->
       <div class="row" style="gap: 20px; align-items: stretch;">
+        <!-- Formulario INDICACIONES -->
+        <div class="col-md-6">
+            <div class="card">
+              <div class="card-header bg-info text-white d-flex justify-content-between align-items-center"
+                   onclick="toggleCollapse('collapseTutorial', 'iconTutorial')"
+                   style="cursor: pointer;">
+                <h3 class="card-title mb-0">Indicaciones Plataforma PIDE - Servicio Reniec</h3>
+                <i id="iconTutorial" class="fas fa-chevron-up toggle-icon ml-auto"></i>
+              </div>
+              <div id="collapseTutorial" class="collapse">
+                <div class="card-body">
+                  <p><strong>Recomendaciones:</strong></p>
+                  <ul>
+                    <li>Actualiza tus credenciales PIDE cada <strong>14 días</strong> para evitar la baja automática.</li>
+                    <li>Solo puedes consultar DNIs de mayores de edad.</li>
+                    <li>Cada usuario tiene <strong>1000 consultas diarias</strong>.</li>
+                  </ul>
+                  <p><strong>En caso de baja:</strong> Contacta al Coordinador PIDE de OTI Ilave:</p>
+                  <ul>
+                    <li>Teléfonos: <strong>954 623 653</strong>, <strong>980 197 718</strong>.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
 
         <!-- Formulario ACTUALIZAR -->
         <div class="col-md-6">
@@ -52,12 +78,12 @@
                 <form id="frmActualizar" onsubmit="return false;">
                   @csrf
                   <div class="form-group" style="position: relative;">
-                    <label for="credencialAnterior">Credencial Actual:</label>
+                    <label for="credencialAnterior">Credencial PIDE Actual:</label>
                     <input type="password" id="credencialAnterior" name="credencialAnterior" class="form-control" required>
                     <i class="fas fa-eye" id="toggleCredAnterior" style="position: absolute; top: 35px; right: 15px; cursor: pointer;"></i>
                   </div>
                   <div class="form-group" style="position: relative;">
-                    <label for="credencialNueva">Nueva Credencial:</label>
+                    <label for="credencialNueva">Nueva Credencial PIDE:</label>
                     <input type="password" id="credencialNueva" name="credencialNueva" class="form-control" required minlength="8">
                     <i class="fas fa-eye" id="toggleCredNueva" style="position: absolute; top: 35px; right: 15px; cursor: pointer;"></i>
                   </div>
@@ -107,7 +133,7 @@
                     <input type="text" id="nuRucUsuario" name="nuRucUsuario" class="form-control" required value="20181438364">
                   </div>
                   <div class="form-group" style="position: relative;">
-                    <label for="password">Contraseña PIDE:</label>
+                    <label for="password">Credencial PIDE:</label>
                     <input type="password" id="password" name="password" class="form-control" required>
                     <i class="fas fa-eye" id="togglePasswordPIDE" style="position: absolute; top: 35px; right: 15px; cursor: pointer;"></i>
                   </div>
