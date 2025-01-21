@@ -18,12 +18,13 @@
     <!-- Main Content -->
     <section class="content">
         <div class="container-fluid">
+
             <!-- Formulario de consulta -->
             <div class="card card-primary">
                 <div class="card-header">
                     <h3 class="card-title">Consultar RUC</h3>
                 </div>
-                <form action="{{ route('estudiante.ruc') }}" method="POST">
+                <form action="{{ route('estudiante.ruc.consultar') }}" method="POST">
                     @csrf
                     <div class="card-body">
                         <div class="form-group">
@@ -54,7 +55,7 @@
                     </div>
                     <div class="card-body">
                         @foreach($results as $key => $result)
-                            <h4 class="text-info">{{ $key }}</h4>
+                            <h4 class="text-info">{{ ucfirst($key) }}</h4>
                             @if(isset($result['error']) && $result['error'])
                                 <div class="alert alert-danger">
                                     <p>{{ $result['message'] }}</p>
