@@ -29,7 +29,7 @@
                     <div class="card-body">
                         <div class="form-group">
                             <label for="ruc">Número de RUC</label>
-                            <input type="text" name="ruc" id="ruc" class="form-control" placeholder="Ingrese el número de RUC" required>
+                            <input type="text" name="ruc" id="ruc" class="form-control" placeholder="Ingrese el número de RUC" value="{{ old('ruc') }}" required>
                         </div>
                         @if($errors->any())
                             <div class="alert alert-danger">
@@ -49,13 +49,13 @@
 
             <!-- Resultados -->
             @if(isset($results))
-                <div class="card card-success">
+                <div class="card card-success mt-3">
                     <div class="card-header">
                         <h3 class="card-title">Resultados de la Consulta</h3>
                     </div>
                     <div class="card-body">
                         @foreach($results as $key => $result)
-                            <h4 class="text-info">{{ ucfirst($key) }}</h4>
+                            <h4 class="text-info">{{ ucfirst(str_replace('_', ' ', $key)) }}</h4>
                             @if(isset($result['error']) && $result['error'])
                                 <div class="alert alert-danger">
                                     <p>{{ $result['message'] }}</p>
