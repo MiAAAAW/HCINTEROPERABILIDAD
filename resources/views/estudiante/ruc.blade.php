@@ -23,7 +23,7 @@
                 <div class="card-header">
                     <h3 class="card-title">Consultar RUC</h3>
                 </div>
-                <form action="{{ route('consultar.ruc') }}" method="POST">
+                <form action="{{ route('estudiante.ruc') }}" method="POST">
                     @csrf
                     <div class="card-body">
                         <div class="form-group">
