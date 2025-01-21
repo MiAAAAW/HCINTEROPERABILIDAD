@@ -46,7 +46,27 @@
                         @if (isset($result['error']) && $result['error'])
                             <p class="text-danger">Error: {{ $result['message'] }}</p>
                         @else
-                            <pre>{{ json_encode($result, JSON_PRETTY_PRINT) }}</pre>
+                            <!-- Mostrar datos en una tabla -->
+                            <table class="table table-bordered">
+                                <tbody>
+                                    @foreach ($result as $key => $value)
+                                        <tr>
+                                            <th>{{ ucfirst(str_replace('_', ' ', $key)) }}</th>
+                                            <td>
+                                                @if (is_array($value))
+                                                    <ul>
+                                                        @foreach ($value as $subKey => $subValue)
+                                                            <li><strong>{{ ucfirst(str_replace('_', ' ', $subKey)) }}:</strong> {{ $subValue }}</li>
+                                                        @endforeach
+                                                    </ul>
+                                                @else
+                                                    {{ $value }}
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         @endif
                     </div>
                 </div>
