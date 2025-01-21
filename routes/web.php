@@ -189,33 +189,9 @@ Route::group(['middleware' =>'estudiante'], function (){
     Route::post('estudiante/reniec/consultar', [ReniecController::class, 'consultarDatos'])
          ->name('reniec.consultar');
 
-   /// Rutas para servicios SOAP de SUNAT
-   Route::post('estudiante/sunat/datos-principales', [RucController::class, 'getDatosPrincipales'])
-    ->name('sunat.datos-principales');
-    Route::post('estudiante/sunat/datos-secundarios', [RucController::class, 'getDatosSecundarios'])
-    ->name('sunat.datos-secundarios');
-    Route::post('estudiante/sunat/datos-t1144', [RucController::class, 'getDatosT1144'])
-    ->name('sunat.datos-t1144');
-    Route::post('estudiante/sunat/datos-t362', [RucController::class, 'getDatosT362'])
-    ->name('sunat.datos-t362');
-    Route::post('estudiante/sunat/domicilio-legal', [RucController::class, 'getDomicilioLegal'])
-    ->name('sunat.domicilio-legal');
-    Route::post('estudiante/sunat/establecimientos-anexos', [RucController::class, 'getEstablecimientosAnexos'])
-    ->name('sunat.establecimientos-anexos');
-    Route::post('estudiante/sunat/establecimientos-t1150', [RucController::class, 'getEstAnexosT1150'])
-    ->name('sunat.establecimientos-t1150');
-    Route::post('estudiante/sunat/representantes-legales', [RucController::class, 'getRepLegales'])
-    ->name('sunat.representantes-legales');
-    Route::post('estudiante/sunat/razon-social', [RucController::class, 'buscarRazonSocial'])
-    ->name('sunat.razon-social');
+   /// Rutas para servicios  de SUNAT
 
-    // Ruta para combinar todos los datos y mostrarlos en la vista
-    Route::post('estudiante/sunat/todos-los-datos', [RucController::class, 'getAllData'])
-    ->name('sunat.todos-los-datos');
-
-    // Ruta para obtener datos REST
-    Route::post('estudiante/sunat/datos-rest', [RucController::class, 'getDatosViaREST'])
-    ->name('sunat.datos-rest');
+    Route::post('/estudiante/ruc/consultar', [RucController::class, 'consultar']);
 
 
 });
