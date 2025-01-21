@@ -15,6 +15,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\EstudianteController;
 use App\Http\Controllers\InscribirController;
 use App\Http\Controllers\EstudianteNotasController;
+use App\Http\Controllers\RucController;
 use App\Http\Controllers\MencionController;
 use App\Http\Controllers\NoticiaController;
 use App\Http\Controllers\ImageController;
@@ -175,12 +176,13 @@ Route::group(['middleware' =>'docente'], function (){
 Route::group(['middleware' =>'estudiante'], function (){
 
     Route::get('estudiante/dashboard' , [DashboardController::class , 'dashboard'] );
+    Route::get('estudiante/notas', [DashboardController::class, 'ruc']);
     //Route::get('estudiante/notas', [EstudianteNotasController::class, 'notas']);
 
     Route::get('estudiante/change_password' , [UserController::class , 'change_password'] );
     Route::post('estudiante/change_password', [UserController::class , 'update_change_password'] );
 
-    
+
     // --- RUTAS PARA EL CONSUMO DE RENIEC A TRAVÉS DE PIDE ---
     Route::post('estudiante/reniec/actualizar', [ReniecController::class, 'actualizarCredencial'])
          ->name('reniec.actualizar');

@@ -56,6 +56,7 @@
             </a>
           </li>
 
+
           <li class="nav-item">
             <a href="{{url('admin/admin/list')}}" class="nav-link @if(Request::segment(2) =='admin') active @endif">
               <i class="bi bi-hospital"></i>
@@ -169,6 +170,16 @@
               <i class="nav-icon fas fa-tachometer-alt"></i>
               <p>
                 DNI - PIDE
+
+              </p>
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a href="{{url('admin/ruc')}}" class="nav-link @if(Request::segment(2) =='dashboard') active @endif">
+              <i class="nav-icon fas fa-tachometer-alt"></i>
+              <p>
+                RUC - PIDE
 
               </p>
             </a>
