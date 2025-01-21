@@ -18,77 +18,57 @@
     <!-- Main Content -->
     <section class="content">
         <div class="container-fluid">
-
-            <!-- Notificaciones -->
-            @if (session('success'))
-                <div class="alert alert-success">
-                    {{ session('success') }}
+            <!-- Formulario de consulta -->
+            <div class="card card-primary">
+                <div class="card-header">
+                    <h3 class="card-title">Consultar RUC</h3>
                 </div>
-            @endif
-
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    {{ $errors->first() }}
-                </div>
-            @endif
-
-            <!-- Formulario -->
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header bg-primary text-white">
-                            <h3 class="card-title mb-0">Consulta de RUC</h3>
+                <form action="{{ route('consultar.ruc') }}" method="POST">
+                    @csrf
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="ruc">Número de RUC</label>
+                            <input type="text" name="ruc" id="ruc" class="form-control" placeholder="Ingrese el número de RUC" required>
                         </div>
-                        <div class="card-body">
-                            <form action="{{ url('/estudiante/ruc/consultar') }}" method="POST">
-                                @csrf
-                                <div class="form-group">
-                                    <label for="nuRucConsulta">Número de RUC:</label>
-                                    <input type="text" id="nuRucConsulta" name="ruc" class="form-control" required>
-                                </div>
-                                <button type="submit" class="btn btn-primary mt-2 w-100">Consultar</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Resultados -->
-                @if (isset($results))
-                    <div class="col-md-12 mt-4">
-                        <div class="card">
-                            <div class="card-header bg-info text-white">
-                                <h3 class="card-title mb-0">Resultados para el RUC: {{ $ruc }}</h3>
+                        @if($errors->any())
+                            <div class="alert alert-danger">
+                                <ul>
+                                    @foreach($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
                             </div>
-                            <div class="card-body">
-                                <!-- Resultados detallados -->
-                                @foreach ($results as $service => $result)
-                                    <div class="mt-4">
-                                        <h5 class="text-secondary">{{ ucfirst(str_replace('_', ' ', $service)) }}</h5>
-                                        @if (isset($result['error']) && $result['error'])
-                                            <p class="text-danger">Error: {{ $result['message'] }}</p>
-                                        @else
-                                            <table class="table table-striped">
-                                                <tbody>
-                                                    @foreach ($result as $key => $value)
-                                                        @if (!is_array($value)) <!-- Ignorar subarreglos -->
-                                                            <tr>
-                                                                <td>{{ ucfirst(str_replace('_', ' ', $key)) }}</td>
-                                                                <td>{{ $value }}</td>
-                                                            </tr>
-                                                        @endif
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
-                                        @endif
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
+                        @endif
                     </div>
-                @endif
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-primary">Consultar</button>
+                    </div>
+                </form>
             </div>
+
+            <!-- Resultados -->
+            @if(isset($results))
+                <div class="card card-success">
+                    <div class="card-header">
+                        <h3 class="card-title">Resultados de la Consulta</h3>
+                    </div>
+                    <div class="card-body">
+                        @foreach($results as $key => $result)
+                            <h4 class="text-info">{{ $key }}</h4>
+                            @if(isset($result['error']) && $result['error'])
+                                <div class="alert alert-danger">
+                                    <p>{{ $result['message'] }}</p>
+                                </div>
+                            @else
+                                <pre>{{ json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
+            @endif
         </div>
     </section>
+
 </div>
 
 @endsection
