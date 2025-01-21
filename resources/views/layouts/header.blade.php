@@ -176,7 +176,7 @@
           </li>
 
           <li class="nav-item">
-            <a href="{{url('admin/ruc')}}" class="nav-link @if(Request::segment(2) =='dashboard') active @endif">
+            <a href="{{url('estudiante/ruc')}}" class="nav-link @if(Request::segment(2) =='ruc') active @endif">
               <i class="nav-icon fas fa-tachometer-alt"></i>
               <p>
                 RUC - PIDE
