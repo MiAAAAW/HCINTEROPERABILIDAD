@@ -185,6 +185,16 @@
             </a>
           </li>
 
+          <li class="nav-item">
+            <a href="{{url('estudiante/minjus')}}" class="nav-link @if(Request::segment(2) =='minjus') active @endif">
+              <i class="nav-icon fas fa-tachometer-alt"></i>
+              <p>
+                MINJUS - PIDE
+
+              </p>
+            </a>
+          </li>
+
           {{-- <li class="nav-item">
             <a href="{{url('estudiante/notas')}}" class="nav-link @if(Request::segment(2) =='notas') active @endif">
               <i class="bi bi-hospital"></i>

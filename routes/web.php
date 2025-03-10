@@ -15,11 +15,14 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\EstudianteController;
 use App\Http\Controllers\InscribirController;
 use App\Http\Controllers\EstudianteNotasController;
-use App\Http\Controllers\RucController;
+
 use App\Http\Controllers\MencionController;
 use App\Http\Controllers\NoticiaController;
 use App\Http\Controllers\ImageController;
+#interoperabilidad controllers for laravel 12 consider this!
+use App\Http\Controllers\RucController;
 use App\Http\Controllers\ReniecController;
+use App\Http\Controllers\MinjusController;
 use App\Models\Noticia;
 
 /*
@@ -191,7 +194,17 @@ Route::group(['middleware' =>'estudiante'], function (){
 
    /// Rutas para servicios  de SUNAT
 
-    Route::post('estudiante/ruc/consultar', [RucController::class, 'consultar'])->name('estudiante.ruc.consultar');;
+    Route::post('estudiante/ruc/consultar', [RucController::class, 'consultar'])->name('estudiante.ruc.consultar');
+
+
+    // -------------------------------------------------------------------------
+    // RUTAS PARA CONSUMO DEL SERVICIO MINJUS - REST
+    // -------------------------------------------------------------------------
+
+    // Rutas para consumo del servicio MINJUS REST
+    Route::get('estudiante/minjus', [MinjusController::class, 'index'])->name('estudiante.minjus.index');
+    Route::post('estudiante/minjus/consult-all', [MinjusController::class, 'consultAll'])->name('estudiante.minjus.consultAll');
+
 
 
 });
