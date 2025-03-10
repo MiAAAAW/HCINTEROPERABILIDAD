@@ -13,29 +13,28 @@ class MinjusController extends Controller
 
     public function __construct()
     {
-        // URL base del servicio REST según el manual MINJUS
+        // URL base del servicio REST (manual MINJUS)
         $this->baseUrl = 'https://ws4.pide.gob.pe/Rest/MinJus/';
-        $this->timeout = 10; // Tiempo de espera en segundos
+        $this->timeout = 10; // Ajusta según necesidades
     }
 
-    // Muestra la vista única con el formulario completo
+    // Muestra el formulario para credenciales y parámetros
     public function index()
     {
         return view('estudiante.minjus');
     }
 
-    // Método que recoge todas las entradas (credenciales y parámetros opcionales)
-    // y consulta cada endpoint REST de forma automática.
+    // Método que consume TODAS las funciones en un solo paso
     public function consultAll(Request $request)
     {
-        // Se recogen las credenciales (obligatorias)
+        // Credenciales obligatorias
         $user = $request->input('user');
         $pass = $request->input('pass');
         if (empty($user) || empty($pass)) {
-            return back()->with('error', 'Debe ingresar usuario y contraseña proporcionados por MINJUS.');
+            return back()->with('error', 'Debe ingresar usuario y contraseña de MINJUS.')->withInput();
         }
 
-        // Parámetros opcionales para las consultas
+        // Parámetros opcionales
         $colegioId       = $request->input('colegioId');
         $colegiatura     = $request->input('colegiatura');
         $tipoDocumento   = $request->input('tipoDocumento');
@@ -49,10 +48,10 @@ class MinjusController extends Controller
         $client = new Client([
             'base_uri' => $this->baseUrl,
             'timeout'  => $this->timeout,
-            'verify'   => false,
+            'verify'   => false, // En producción, conviene activar SSL
         ]);
 
-        // Método auxiliar inline para realizar peticiones POST y decodificar JSON
+        // Auxiliar para POST + JSON
         $postJson = function ($endpoint, array $payload) use ($client) {
             try {
                 $response = $client->post($endpoint . '?out=json', [
@@ -64,23 +63,17 @@ class MinjusController extends Controller
             }
         };
 
-        // Se preparan las consultas
+        // Se invocan las 7 funciones definidas en el manual REST
         $responses = [];
 
         // 1. ColegioAbogado
         $responses['ColegioAbogado'] = $postJson('ColegioAbogado', [
-            'PIDE' => [
-                'user' => $user,
-                'pass' => $pass,
-            ],
+            'PIDE' => ['user' => $user, 'pass' => $pass],
         ]);
 
         // 2. EntidadSancionadora
         $responses['EntidadSancionadora'] = $postJson('EntidadSancionadora', [
-            'PIDE' => [
-                'user' => $user,
-                'pass' => $pass,
-            ],
+            'PIDE' => ['user' => $user, 'pass' => $pass],
         ]);
 
         // 3. SancionColegiatura
@@ -94,7 +87,7 @@ class MinjusController extends Controller
             ],
         ]);
 
-        // 4. SancionDocumento
+        // 4. SancionDocumento (principal para DNI)
         $responses['SancionDocumento'] = $postJson('SancionDocumento', [
             'PIDE' => [
                 'user'            => $user,
@@ -108,32 +101,26 @@ class MinjusController extends Controller
         // 5. SancionNombre
         $responses['SancionNombre'] = $postJson('SancionNombre', [
             'PIDE' => [
-                'user'           => $user,
-                'pass'           => $pass,
-                'apePaterno'     => $apePaterno,
-                'apeMaterno'     => $apeMaterno,
-                'nombres'        => $nombres,
+                'user'            => $user,
+                'pass'            => $pass,
+                'apePaterno'      => $apePaterno,
+                'apeMaterno'      => $apeMaterno,
+                'nombres'         => $nombres,
                 'recuperarArchivo'=> $recuperarArchivo,
             ],
         ]);
 
         // 6. TipoDocumento
         $responses['TipoDocumento'] = $postJson('TipoDocumento', [
-            'PIDE' => [
-                'user' => $user,
-                'pass' => $pass,
-            ],
+            'PIDE' => ['user' => $user, 'pass' => $pass],
         ]);
 
         // 7. TipoSanciones
         $responses['TipoSanciones'] = $postJson('TipoSanciones', [
-            'PIDE' => [
-                'user' => $user,
-                'pass' => $pass,
-            ],
+            'PIDE' => ['user' => $user, 'pass' => $pass],
         ]);
 
-        // Retornamos la vista con las respuestas en sesión
+        // Retornamos la vista con todas las respuestas
         return back()->with([
             'allResponses' => $responses,
             'endpointName' => 'Todas las Funciones'
