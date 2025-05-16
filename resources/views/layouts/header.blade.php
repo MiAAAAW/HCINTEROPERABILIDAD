@@ -195,6 +195,15 @@
             </a>
           </li>
 
+          <li class="nav-item">
+            <a href="{{ url('estudiante/mtc') }}" class="nav-link @if(Request::segment(2) =='mtc') active @endif">
+              <i class="nav-icon fas fa-id-card"></i>
+              <p>
+                MTC - PIDE 
+              </p>
+            </a>
+          </li>
+
           {{-- <li class="nav-item">
             <a href="{{url('estudiante/notas')}}" class="nav-link @if(Request::segment(2) =='notas') active @endif">
               <i class="bi bi-hospital"></i>

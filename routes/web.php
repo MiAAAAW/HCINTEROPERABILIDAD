@@ -19,10 +19,13 @@ use App\Http\Controllers\EstudianteNotasController;
 use App\Http\Controllers\MencionController;
 use App\Http\Controllers\NoticiaController;
 use App\Http\Controllers\ImageController;
+
 #interoperabilidad controllers for laravel 12 consider this!
 use App\Http\Controllers\RucController;
 use App\Http\Controllers\ReniecController;
 use App\Http\Controllers\MinjusController;
+use App\Http\Controllers\MtcController;
+
 use App\Models\Noticia;
 
 /*
@@ -204,7 +207,18 @@ Route::group(['middleware' =>'estudiante'], function (){
     // Rutas para consumo del servicio MINJUS REST
     Route::get('estudiante/minjus', [MinjusController::class, 'index'])->name('estudiante.minjus.index');
     Route::post('estudiante/minjus/consult-all', [MinjusController::class, 'consultAll'])->name('estudiante.minjus.consultAll');
+    
+    // -------------------------------------------------------------------------
+    // RUTAS PARA CONSUMO DEL SERVICIO MTC- REST
+    // -------------------------------------------------------------------------
 
 
+    Route::prefix('estudiante')->middleware(['auth', 'estudiante'])->group(function () {
+        Route::get('/mtc', [MtcController::class, 'mostrarFormulario']);
+        Route::post('/mtc', [MtcController::class, 'consultarTodo']);
+    });
 
+    Route::post('/estudiante/mtc/exportar', [App\Http\Controllers\MtcController::class, 'exportarPDF'])->name('estudiante.mtc.exportar');
+
+    
 });
